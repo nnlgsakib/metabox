@@ -1,33 +1,17 @@
-import React from "react"
-import { MemoryRouter as Router, Switch, Route } from "react-router-dom"
-import { ThemeProvider } from "@mui/material/styles"
 import "./App.css"
-import { theme } from "./theme"
-import { Paper, Typography } from "@mui/material"
-import { GreetingView } from "./views/greeting.view"
+import { Provider } from "react-redux"
+import { PersistGate } from "redux-persist/integration/react"
+import configureStore from "./store/configureStore"
+import { AppLayout } from "./App.layout"
 
-document.body.style.backgroundColor = theme.palette.background.default
+const { store, persistor } = configureStore()
 
-const Hello = () => {
-	return (
-		<Paper>
-			<Typography variant="h3">Hello world</Typography>
-		</Paper>
-	)
-}
 export default function App() {
-	const loggedIn = false
 	return (
-		<ThemeProvider theme={theme}>
-			{loggedIn ? (
-				<Router>
-					<Switch>
-						<Route path="/" component={Hello} />
-					</Switch>
-				</Router>
-			) : (
-				<GreetingView />
-			)}
-		</ThemeProvider>
+		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
+				<AppLayout />
+			</PersistGate>
+		</Provider>
 	)
 }

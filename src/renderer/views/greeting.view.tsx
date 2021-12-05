@@ -1,5 +1,4 @@
 import { Button, Typography } from "@mui/material"
-import React from "react"
 import "./greeting.style.css"
 import AddBoxIcon from "@mui/icons-material/AddBox"
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
