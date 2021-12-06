@@ -24,7 +24,7 @@ export function SetPasswordView() {
 	)
 
 	const savePassword = React.useCallback(() => {
-		const hash = Crypto.SHA512(newPassword).toString()
+		const hash = Crypto.SHA3(newPassword).toString(Crypto.enc.Base64)
 		dispatch({ type: AuthAction.SetPassword, password: newPassword, passwordHash: hash })
 	}, [dispatch, newPassword])
 

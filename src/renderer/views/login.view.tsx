@@ -20,7 +20,7 @@ export function LoginView() {
 	)
 
 	const attemptUnlock = React.useCallback(() => {
-		const hash = Crypto.SHA512(password).toString()
+		const hash = Crypto.SHA3(password).toString(Crypto.enc.Base64)
 		if (hash != auth.passwordHash) {
 			setWrongPass(true)
 			return
