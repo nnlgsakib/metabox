@@ -4,8 +4,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import PasswordStrengthBar from "react-password-strength-bar"
 import { useDispatch } from "react-redux"
 import { AuthAction } from "renderer/store/reducers/auth.reducer"
-// import bcrypt from "bcryptjs"
-const PASSWORD_SALT_ROUNDS = 14
+import Crypto from "crypto-js"
 
 export function SetPasswordView() {
 	const dispatch = useDispatch()
@@ -25,9 +24,8 @@ export function SetPasswordView() {
 	)
 
 	const savePassword = React.useCallback(() => {
-		// const hash = bcrypt.hashSync(newPassword, PASSWORD_SALT_ROUNDS)
-		// console.log(hash)
-		dispatch({ type: AuthAction.SetPassword, data: newPassword })
+		const hash = Crypto.SHA512(newPassword).toString()
+		dispatch({ type: AuthAction.SetPassword, password: newPassword, passwordHash: hash })
 	}, [dispatch, newPassword])
 
 	return (

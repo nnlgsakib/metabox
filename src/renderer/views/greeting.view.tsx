@@ -11,11 +11,11 @@ export function GreetingView() {
 					Welcome to MetaWallet
 				</Typography>
 				<Button size="large" variant="contained" color="primary" fullWidth style={{ marginTop: 50 }}>
-					<AddBoxIcon sx={{ fontSize: 40 }} style={{ marginRight: 10 }} />
+					<AddBoxIcon sx={{ fontSize: 25 }} style={{ marginRight: 10 }} />
 					Create new wallet
 				</Button>
 				<Button size="large" variant="outlined" color="secondary" fullWidth style={{ marginTop: 20 }}>
-					<AccountBalanceWalletIcon sx={{ fontSize: 40 }} style={{ marginRight: 10 }} />
+					<AccountBalanceWalletIcon sx={{ fontSize: 25 }} style={{ marginRight: 10 }} />
 					Import existing wallet
 				</Button>
 			</div>

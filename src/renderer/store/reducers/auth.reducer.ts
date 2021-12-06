@@ -6,14 +6,17 @@ export enum AuthAction {
 
 export interface IAuthState {
 	password: string | null
+	passwordHash: string | null
 }
 
 const initialState: IAuthState = {
 	password: null,
+	passwordHash: null,
 }
 
 export const ReducerAuth = createReducer<IAuthState>(initialState, (builder) => {
 	builder.addCase(AuthAction.SetPassword, (state, action: AnyAction) => {
-		state.password = action.data
+		if (action.password) state.password = action.password
+		if (action.passwordHash) state.passwordHash = action.passwordHash
 	})
 })

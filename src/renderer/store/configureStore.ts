@@ -9,6 +9,15 @@ import { ReducerTransactions } from "./reducers/transactions.reducer"
 import { ReducerWallets } from "./reducers/wallets.reducer"
 import { RootSaga } from "./root.saga"
 
+const authReducer = persistReducer(
+	{
+		key: "auth",
+		storage,
+		blacklist: ["password"],
+	},
+	ReducerAuth as Reducer<any, any>,
+)
+
 const settingsReducer = persistReducer(
 	{
 		key: "settings",
@@ -39,7 +48,7 @@ const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ||
 export default () => {
 	const store = createStore(
 		combineReducers({
-			auth: ReducerAuth,
+			auth: authReducer,
 			settings: settingsReducer,
 			transactions: transactionsReducer,
 			wallets: walletsReducer,

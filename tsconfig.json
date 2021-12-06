@@ -22,7 +22,11 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "outDir": "release/app/dist"
+    "outDir": "release/app/dist",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/renderer/@types"
+    ]
   },
   "exclude": [
     "test",
