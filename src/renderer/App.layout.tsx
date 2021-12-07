@@ -1,32 +1,61 @@
-import { Typography } from "@mui/material"
+import React from "react"
+import { CssBaseline, Grid, Theme, ThemeProvider, Typography } from "@mui/material"
 import { MemoryRouter as Router, Switch, Route } from "react-router-dom"
 import { GreetingView } from "./views/greeting.view"
 import { SetPasswordView } from "./views/set-password.view"
-import { theme } from "./theme"
-import { useSelector } from "react-redux"
+import { darkTheme, lightTheme } from "./theme"
+import { useDispatch, useSelector } from "react-redux"
 import { IAuthState } from "./store/reducers/auth.reducer"
 import { LoginView } from "./views/login.view"
 import { HomeView } from "./views/home.view"
-
-document.body.style.backgroundColor = theme.palette.background.default
+import { HomeHeaderComponent } from "./views/components/home-header.component"
+import { IWalletsState, WalletsAction } from "./store/reducers/wallets.reducer"
+import { ISettingsState } from "./store/reducers/settings.reducer"
 
 export function AppLayout() {
 	const auth: IAuthState = useSelector((s: any) => s.auth)
-	const walletsCount: number = useSelector((s: any) => s.wallets.list.length)
+	const wallets: IWalletsState = useSelector((s: any) => s.wallets)
+	const settings: ISettingsState = useSelector((s: any) => s.settings)
+	const [theme, setTheme] = React.useState<Theme>(lightTheme)
 
-	return !auth.passwordHash ? (
-		<SetPasswordView />
-	) : auth.password ? (
-		walletsCount > 0 ? (
-			<Router>
-				<Switch>
-					<Route path="/" component={HomeView} />
-				</Switch>
-			</Router>
-		) : (
-			<GreetingView />
-		)
-	) : (
-		<LoginView />
+	React.useEffect(() => {
+		const _theme = settings.theme == "dark" ? darkTheme : lightTheme
+		const backgroundColor = _theme.palette.background.default
+		document.body.style.backgroundColor = backgroundColor
+		setTheme(_theme)
+	}, [settings.theme])
+
+	const dispatch = useDispatch()
+	if (wallets.list.length > 0 && (!wallets.selectedWallet || !wallets.selectedAccount)) {
+		dispatch({ type: WalletsAction.SelectWallet, walletId: wallets.list[0].id })
+		return null
+	}
+
+	return (
+		<ThemeProvider theme={theme}>
+			<CssBaseline />
+			{!auth.passwordHash ? (
+				<SetPasswordView />
+			) : auth.password ? (
+				wallets.list.length > 0 ? (
+					<React.Fragment>
+						<HomeHeaderComponent />
+						<Grid container justifyContent="center">
+							<Grid item xs={12} sm={9} md={6}>
+								<Router>
+									<Switch>
+										<Route path="/" component={HomeView} />
+									</Switch>
+								</Router>
+							</Grid>
+						</Grid>
+					</React.Fragment>
+				) : (
+					<GreetingView />
+				)
+			) : (
+				<LoginView />
+			)}
+		</ThemeProvider>
 	)
 }

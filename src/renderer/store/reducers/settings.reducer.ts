@@ -1,7 +1,7 @@
-import { AnyAction, Action } from "redux"
+import { createReducer, AnyAction } from "@reduxjs/toolkit"
 
 export enum SettingsAction {
-	SetTheme = "SetTheme",
+	SwitchTheme = "SwitchTheme",
 }
 
 export interface ISettingsState {
@@ -12,13 +12,8 @@ const initialState: ISettingsState = {
 	theme: "light",
 }
 
-export function ReducerSettings(
-	state: ISettingsState = initialState,
-	action: AnyAction & Action<SettingsAction>,
-): ISettingsState {
-	switch (action.type) {
-		case SettingsAction.SetTheme:
-			return { ...state, theme: action.data }
-	}
-	return state
-}
+export const ReducerSettings = createReducer<ISettingsState>(initialState, (builder) => {
+	builder.addCase(SettingsAction.SwitchTheme, (state, action: AnyAction) => {
+		state.theme = state.theme == "light" ? "dark" : "light"
+	})
+})

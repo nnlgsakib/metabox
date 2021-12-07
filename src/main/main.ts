@@ -16,6 +16,7 @@ import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import MenuBuilder from "./menu"
 import { resolveHtmlPath } from "./util"
+require("@electron/remote/main").initialize()
 
 export default class AppUpdater {
 	constructor() {
@@ -79,6 +80,11 @@ const createWindow = async () => {
 		maxHeight: isDevelopment ? undefined : 900,
 		minHeight: 500,
 		icon: getAssetPath("icon.png"),
+		frame: false,
+		title: "Metaverse Wallet",
+		darkTheme: true,
+		fullscreenable: false,
+
 		webPreferences: {
 			preload: path.join(__dirname, "preload.js"),
 		},

@@ -6,6 +6,8 @@ export enum WalletsAction {
 	NewAccount = "NewAccount",
 	DeleteWallet = "DeleteWallet",
 	DeleteAccount = "DeleteAccount",
+	SelectWallet = "SelectWallet",
+	SelectAccount = "SelectAccount",
 }
 
 export interface IWalletsState {
@@ -31,5 +33,15 @@ export const ReducerWallets = createReducer<IWalletsState>(initialState, (builde
 			}
 			return wallet
 		})
+	})
+	builder.addCase(WalletsAction.SelectWallet, (state, action: AnyAction) => {
+		const wallet = state.list.find((w) => w.id == action.walletId)
+		if (wallet && wallet.accounts.length > 0) {
+			state.selectedWallet = action.walletId
+			state.selectedAccount = wallet.accounts[0].id
+		}
+	})
+	builder.addCase(WalletsAction.SelectAccount, (state, action: AnyAction) => {
+		state.selectedAccount = action.accountId
 	})
 })

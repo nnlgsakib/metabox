@@ -1,15 +1,10 @@
 import React from "react"
-
-import { Grid } from "@mui/material"
-import { HomeHeaderComponent } from "./components/home-header.component"
+import { AccountBarComponent } from "./components/account-bar.component"
 
 export function HomeView() {
 	return (
 		<React.Fragment>
-			<HomeHeaderComponent />
-			<Grid container justifyContent="center">
-				<Grid item xs={12} sm={9} md={6}></Grid>
-			</Grid>
+			<AccountBarComponent />
 		</React.Fragment>
 	)
 }
