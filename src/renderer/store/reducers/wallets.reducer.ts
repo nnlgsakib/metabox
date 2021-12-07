@@ -25,9 +25,11 @@ export const ReducerWallets = createReducer<IWalletsState>(initialState, (builde
 		state.list.push(action.wallet)
 	})
 	builder.addCase(WalletsAction.NewAccount, (state, action: AnyAction) => {
-		const wallet = state.list.find((w) => w.id == action.walletId)
-		if (wallet) {
-			wallet.newAccount(`Account ${wallet.getLastIndex() + 2}`, action.password)
-		}
+		state.list = state.list.map((wallet) => {
+			if (wallet.id == action.walletId) {
+				wallet.newAccount(`Account ${wallet.getLastIndex() + 2}`, action.password)
+			}
+			return wallet
+		})
 	})
 })

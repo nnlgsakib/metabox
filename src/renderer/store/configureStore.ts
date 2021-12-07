@@ -9,6 +9,8 @@ import { ReducerTransactions } from "./reducers/transactions.reducer"
 import { ReducerWallets } from "./reducers/wallets.reducer"
 import { RootSaga } from "./root.saga"
 import { walletsTransform } from "./transforms/wallets.transform"
+import { currentNetworkTransform, networksTransform } from "./transforms/network.transform"
+import { ReducerNetwork } from "./reducers/network.reducer"
 
 const authReducer = persistReducer(
 	{
@@ -18,6 +20,15 @@ const authReducer = persistReducer(
 		blacklist: process.env.NODE_ENV == "development" ? [] : ["password"],
 	},
 	ReducerAuth as Reducer<any, any>,
+)
+
+const networkReducer = persistReducer(
+	{
+		key: "network",
+		storage,
+		transforms: [currentNetworkTransform, networksTransform],
+	},
+	ReducerNetwork as Reducer<any, any>,
 )
 
 const settingsReducer = persistReducer(
@@ -52,6 +63,7 @@ export default () => {
 	const store = createStore(
 		combineReducers({
 			auth: authReducer,
+			network: networkReducer,
 			settings: settingsReducer,
 			transactions: transactionsReducer,
 			wallets: walletsReducer,

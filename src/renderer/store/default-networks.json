@@ -1,0 +1,83 @@
+[
+    {
+        "id": 1,
+        "token": "ETH",
+        "locked": true,
+        "isTestnet": false,
+        "name": "Ethereum Mainnet",
+        "explorer": "https://etherscan.io",
+        "url": "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    },
+    {
+        "id": 3,
+        "token": "ETH",
+        "locked": true,
+        "isTestnet": true,
+        "name": "Ropsten Test Network",
+        "explorer": "https://ropsten.etherscan.io",
+        "url": "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    },
+    {
+        "id": 4,
+        "token": "ETH",
+        "locked": true,
+        "isTestnet": true,
+        "name": "Rinkeby Test Network",
+        "explorer": "https://rinkeby.etherscan.io",
+        "url": "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    },
+    {
+        "id": 5,
+        "token": "ETH",
+        "locked": true,
+        "isTestnet": true,
+        "name": "Goerli Test Network",
+        "explorer": "https://goerli.etherscan.io",
+        "url": "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    },
+    {
+        "id": 42,
+        "token": "ETH",
+        "locked": true,
+        "isTestnet": true,
+        "name": "Kovan Test Network",
+        "explorer": "https://kovan.etherscan.io",
+        "url": "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    },
+    {
+        "id": 137,
+        "token": "MATIC",
+        "locked": true,
+        "isTestnet": false,
+        "name": "Matic Mainnet",
+        "explorer": "https://polygonscan.com",
+        "url": "https://rpc-mainnet.maticvigil.com/"
+    },
+    {
+        "id": 80001,
+        "token": "MATIC",
+        "locked": true,
+        "isTestnet": true,
+        "name": "Matic Testnet",
+        "explorer": "https://mumbai.polygonscan.com",
+        "url": "https://rpc-mumbai.maticvigil.com"
+    },
+    {
+        "id": 250,
+        "token": "FTM",
+        "locked": true,
+        "isTestnet": false,
+        "name": "Fantom Opera",
+        "explorer": "https://ftmscan.com",
+        "url": "https://rpcapi.fantom.network"
+    },
+    {
+        "id": 4002,
+        "token": "FTM",
+        "locked": true,
+        "isTestnet": true,
+        "name": "Fantom Testnet",
+        "explorer": "https://testnet.ftmscan.com",
+        "url": "https://rpc.testnet.fantom.network"
+    }
+]

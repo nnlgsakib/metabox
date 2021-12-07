@@ -28,7 +28,7 @@ export function CreateNewWalletComponent({
 	onWalletCreated,
 }: {
 	setView: (v: number) => void
-	onWalletCreated?: () => void
+	onWalletCreated?: (wallet: Wallet) => void
 }) {
 	const walletsCount: number = useSelector((s: any) => (s.wallets.length ? s.wallets.length : 0))
 	const __password: string = useSelector((s: any) => s.auth.password)

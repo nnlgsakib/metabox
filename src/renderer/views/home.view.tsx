@@ -3,15 +3,12 @@ import { Button, Card, Paper, Typography } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 import { IWallet } from "renderer/models/wallet.model"
 import { WalletsAction } from "renderer/store/reducers/wallets.reducer"
+import { ethers } from "ethers"
 
 export function HomeView() {
 	const dispatch = useDispatch()
 	const wallets: IWallet[] = useSelector((s: any) => s.wallets.list)
 	const __password = useSelector((s: any) => s.auth.password)
-
-	React.useEffect(() => {
-		wallets.map((w) => console.log(typeof w))
-	}, [])
 
 	return (
 		<React.Fragment>

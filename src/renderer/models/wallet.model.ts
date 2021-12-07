@@ -10,6 +10,7 @@ export interface IAccount {
 	name: string
 	address: string
 	privateKey: string
+	getSigner(password: string, provider?: ethers.providers.BaseProvider): ethers.Signer
 }
 
 export interface IWallet {
@@ -35,9 +36,9 @@ export class Account implements IAccount {
 		this.privateKey = privateKey
 	}
 
-	getSigner(password: string): ethers.Signer {
+	getSigner(password: string, provider?: ethers.providers.BaseProvider): ethers.Signer {
 		const privateKey = Wallet.decrypt(this.privateKey, password)
-		return new ethers.Wallet(privateKey)
+		return new ethers.Wallet(privateKey, provider)
 	}
 }
 
