@@ -4,7 +4,7 @@
         "token": "ETH",
         "locked": true,
         "isTestnet": false,
-        "name": "Ethereum Mainnet",
+        "name": "Ethereum",
         "explorer": "https://etherscan.io",
         "url": "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
     },
@@ -45,11 +45,29 @@
         "url": "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
     },
     {
+        "id": 56,
+        "token": "BNB",
+        "locked": true,
+        "isTestnet": false,
+        "name": "Binance Smart Chain (BSC)",
+        "explorer": "https://bscscan.com",
+        "url": "https://bsc-dataseed1.binance.org"
+    },
+    {
+        "id": 97,
+        "token": "tBNB",
+        "locked": true,
+        "isTestnet": true,
+        "name": "Binance Smart Chain (BSC) Testnet",
+        "explorer": "https://testnet.bscscan.com",
+        "url": "https://data-seed-prebsc-1-s1.binance.org:8545"
+    },
+    {
         "id": 137,
         "token": "MATIC",
         "locked": true,
         "isTestnet": false,
-        "name": "Matic Mainnet",
+        "name": "Polygon (Matic)",
         "explorer": "https://polygonscan.com",
         "url": "https://rpc-mainnet.maticvigil.com/"
     },
@@ -58,7 +76,7 @@
         "token": "MATIC",
         "locked": true,
         "isTestnet": true,
-        "name": "Matic Testnet",
+        "name": "Polygon (Matic) Testnet",
         "explorer": "https://mumbai.polygonscan.com",
         "url": "https://rpc-mumbai.maticvigil.com"
     },
@@ -67,7 +85,7 @@
         "token": "FTM",
         "locked": true,
         "isTestnet": false,
-        "name": "Fantom Opera",
+        "name": "Fantom",
         "explorer": "https://ftmscan.com",
         "url": "https://rpcapi.fantom.network"
     },

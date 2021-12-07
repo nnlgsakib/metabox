@@ -16,7 +16,7 @@ const initialState: IAuthState = {
 
 export const ReducerAuth = createReducer<IAuthState>(initialState, (builder) => {
 	builder.addCase(AuthAction.SetPassword, (state, action: AnyAction) => {
-		if (action.password) state.password = action.password
+		if (action.password || action.password == null) state.password = action.password
 		if (action.passwordHash) state.passwordHash = action.passwordHash
 	})
 })

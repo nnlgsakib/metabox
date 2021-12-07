@@ -25,7 +25,7 @@ export function LoginView() {
 			setWrongPass(true)
 			return
 		}
-		dispatch({ type: AuthAction.SetPassword, password })
+		setTimeout(() => dispatch({ type: AuthAction.SetPassword, password }), 400)
 	}, [password])
 
 	return (
