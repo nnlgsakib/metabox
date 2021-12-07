@@ -1,4 +1,5 @@
-import { AnyAction, Action } from "redux"
+import { createReducer, AnyAction } from "@reduxjs/toolkit"
+import { IWallet, Wallet } from "renderer/models/wallet.model"
 
 export enum WalletsAction {
 	NewWallet = "NewWallet",
@@ -7,30 +8,26 @@ export enum WalletsAction {
 	DeleteAccount = "DeleteAccount",
 }
 
-export interface IAccount {
-	name: string
-	address: string
-	privateKey: string
-	fingerprint?: string
-	parentFingerprint?: string
+export interface IWalletsState {
+	list: Wallet[]
+	selectedWallet: string | null // wallet id
+	selectedAccount: string | null // account id
 }
 
-export interface IWallet {
-	id: string
-	name: string
-	mnemonic: string
-	accounts: IAccount[]
+const initialState: IWalletsState = {
+	list: [],
+	selectedWallet: null,
+	selectedAccount: null,
 }
 
-const initialState: IWallet[] = []
-
-export function ReducerWallets(
-	state: IWallet[] = initialState,
-	action: AnyAction & Action<WalletsAction>,
-): IWallet[] {
-	switch (action.type) {
-		case WalletsAction.NewWallet:
-			return state.concat(action.data)
-	}
-	return state
-}
+export const ReducerWallets = createReducer<IWalletsState>(initialState, (builder) => {
+	builder.addCase(WalletsAction.NewWallet, (state, action: AnyAction) => {
+		state.list.push(action.wallet)
+	})
+	builder.addCase(WalletsAction.NewAccount, (state, action: AnyAction) => {
+		const wallet = state.list.find((w) => w.id == action.walletId)
+		if (wallet) {
+			wallet.newAccount(`Account ${wallet.getLastIndex() + 2}`, action.password)
+		}
+	})
+})

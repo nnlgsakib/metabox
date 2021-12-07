@@ -8,12 +8,14 @@ import { ReducerSettings } from "./reducers/settings.reducer"
 import { ReducerTransactions } from "./reducers/transactions.reducer"
 import { ReducerWallets } from "./reducers/wallets.reducer"
 import { RootSaga } from "./root.saga"
+import { walletsTransform } from "./transforms/wallets.transform"
 
 const authReducer = persistReducer(
 	{
 		key: "auth",
 		storage,
-		blacklist: ["password"],
+		// We don not store password directly into the local storage(except the development process for ease of use), instead of password, we store passwordHash
+		blacklist: process.env.NODE_ENV == "development" ? [] : ["password"],
 	},
 	ReducerAuth as Reducer<any, any>,
 )
@@ -38,6 +40,7 @@ const walletsReducer = persistReducer(
 	{
 		key: "wallets",
 		storage,
+		transforms: [walletsTransform],
 	},
 	ReducerWallets as Reducer<any, any>,
 )
