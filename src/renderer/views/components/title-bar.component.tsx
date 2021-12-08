@@ -2,9 +2,13 @@ import React from "react"
 import { ButtonBase, Divider, Tooltip } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-// import remote from "@electron/remote"
+import { getCurrentWindow } from "@electron/remote"
 const minimizeApp = () => {
-	remote.getCurrentWindow().minimize()
+	getCurrentWindow().minimize()
+}
+
+const closeApp = () => {
+	getCurrentWindow().close()
 }
 
 export function TitleBar() {
@@ -19,7 +23,7 @@ export function TitleBar() {
 				}}
 			>
 				<Tooltip arrow title="Close">
-					<ButtonBase style={{ width: 50, height: 35, color: "red" }}>
+					<ButtonBase style={{ width: 50, height: 35, color: "red" }} onClick={closeApp}>
 						<CloseIcon sx={{ fontSize: 16 }} />
 					</ButtonBase>
 				</Tooltip>

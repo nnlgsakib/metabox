@@ -20,8 +20,6 @@ export function AppLayout() {
 
 	React.useEffect(() => {
 		const _theme = settings.theme == "dark" ? darkTheme : lightTheme
-		const backgroundColor = _theme.palette.background.default
-		document.body.style.backgroundColor = backgroundColor
 		setTheme(_theme)
 	}, [settings.theme])
 

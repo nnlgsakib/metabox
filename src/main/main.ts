@@ -14,7 +14,6 @@ import path from "path"
 import { app, BrowserWindow, shell, ipcMain } from "electron"
 import { autoUpdater } from "electron-updater"
 import log from "electron-log"
-import MenuBuilder from "./menu"
 import { resolveHtmlPath } from "./util"
 require("@electron/remote/main").initialize()
 
@@ -28,11 +27,11 @@ export default class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null
 
-ipcMain.on("ipc-example", async (event, arg) => {
-	const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`
-	console.log(msgTemplate(arg))
-	event.reply("ipc-example", msgTemplate("pong"))
-})
+// ipcMain.on("ipc-example", async (event, arg) => {
+// 	const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`
+// 	console.log(msgTemplate(arg))
+// 	event.reply("ipc-example", msgTemplate("pong"))
+// })
 
 if (process.env.NODE_ENV === "production") {
 	const sourceMapSupport = require("source-map-support")
@@ -86,9 +85,12 @@ const createWindow = async () => {
 		fullscreenable: false,
 
 		webPreferences: {
-			preload: path.join(__dirname, "preload.js"),
+			// preload: path.join(__dirname, "preload.js"),
+			nodeIntegration: true,
+			contextIsolation: false,
 		},
 	})
+	require("@electron/remote/main").enable((mainWindow as BrowserWindow).webContents)
 
 	mainWindow.loadURL(resolveHtmlPath("index.html"))
 
@@ -107,8 +109,8 @@ const createWindow = async () => {
 		mainWindow = null
 	})
 
-	const menuBuilder = new MenuBuilder(mainWindow)
-	menuBuilder.buildMenu()
+	// const menuBuilder = new MenuBuilder(mainWindow)
+	// menuBuilder.buildMenu()
 
 	// Open urls in the user's browser
 	mainWindow.webContents.on("new-window", (event, url) => {
