@@ -1,19 +1,23 @@
-import { Button, ButtonBase, Divider, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material"
+import { Button, Divider, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material"
 import React from "react"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
+import LanguageIcon from "@mui/icons-material/Language"
+import PersonAddIcon from "@mui/icons-material/PersonAdd"
+import InfoIcon from "@mui/icons-material/Info"
+import GroupIcon from "@mui/icons-material/Group"
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"
 import { IWalletsState } from "renderer/store/reducers/wallets.reducer"
 import { useSelector } from "react-redux"
 import { Account, Wallet } from "renderer/models/wallet.model"
 import { shortenAddress } from "helpers/shorten-address.helper"
 import copy from "copy-to-clipboard"
 import { toast } from "react-toastify"
-import { INetworkState } from "renderer/store/reducers/network.reducer"
+import { NewAccountDialog } from "../dialogs/new-account.dialog"
 
 export function AccountBarComponent() {
 	const wallets: IWalletsState = useSelector((s: any) => s.wallets)
 	const [wallet, setWallet] = React.useState<Wallet | null>(null)
 	const [account, setAccount] = React.useState<Account | null>(null)
-	const network: INetworkState = useSelector((s: any) => s.network)
 
 	React.useEffect(() => {
 		let _w = null
@@ -45,8 +49,11 @@ export function AccountBarComponent() {
 		setAnchorEl(null)
 	}
 
+	const [newAccountDialog, setNewAccountDialog] = React.useState(false)
+
 	return (
 		<React.Fragment>
+			<NewAccountDialog open={newAccountDialog} onClose={() => setNewAccountDialog(false)} />
 			<div style={{ display: "flex", height: 80, marginTop: 4 }}>
 				<div style={{ flex: 1 }}></div>
 				<div style={{ flex: 1 }}>
@@ -75,7 +82,7 @@ export function AccountBarComponent() {
 				</div>
 				<div style={{ flex: 1, display: "flex", flexDirection: "row-reverse" }} className="p10">
 					<div>
-						<Tooltip arrow title="More">
+						<Tooltip arrow title="Account">
 							<IconButton onClick={handleClick}>
 								<MoreVertIcon />
 							</IconButton>
@@ -89,9 +96,26 @@ export function AccountBarComponent() {
 								"aria-labelledby": "basic-button",
 							}}
 						>
-							<MenuItem onClick={handleClose}>View Account in Explorer</MenuItem>
-							<MenuItem onClick={handleClose}>My account</MenuItem>
-							<MenuItem onClick={handleClose}>Logout</MenuItem>
+							<MenuItem onClick={handleClose}>
+								<InfoIcon style={{ marginRight: 6 }} /> Account Info
+							</MenuItem>
+							<MenuItem
+								onClick={() => {
+									setNewAccountDialog(true)
+									handleClose()
+								}}
+							>
+								<PersonAddIcon style={{ marginRight: 6 }} /> New Account{" "}
+							</MenuItem>
+							<MenuItem onClick={handleClose}>
+								<AdminPanelSettingsIcon style={{ marginRight: 6 }} /> Manage Accounts
+							</MenuItem>
+							<MenuItem onClick={handleClose}>
+								<GroupIcon style={{ marginRight: 6 }} /> Select Another Account
+							</MenuItem>
+							<MenuItem onClick={handleClose}>
+								<LanguageIcon style={{ marginRight: 6 }} /> View Account in Explorer
+							</MenuItem>
 						</Menu>
 					</div>
 				</div>

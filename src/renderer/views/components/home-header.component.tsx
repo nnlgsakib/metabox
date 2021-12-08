@@ -92,7 +92,7 @@ export function HomeHeaderComponent() {
 				display: "flex",
 				flexDirection: "row-reverse",
 				alignItems: "center",
-				backgroundColor: "#01010110",
+				backgroundColor: isNightMode ? "#01010130" : "#00000010",
 				position: "relative",
 			}}
 		>
@@ -155,9 +155,11 @@ export function HomeHeaderComponent() {
 							</ListItem>
 						</Menu>
 					</div>
-					<Tooltip title="My Account" arrow>
+					<Tooltip title="This Wallet" arrow>
 						<IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
-							<Avatar sx={{ width: 38, height: 38 }}></Avatar>
+							<Avatar sx={{ width: 38, height: 38 }}>
+								<AccountBalanceWalletIcon />
+							</Avatar>
 						</IconButton>
 					</Tooltip>
 				</Box>

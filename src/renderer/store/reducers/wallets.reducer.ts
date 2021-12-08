@@ -1,5 +1,5 @@
 import { createReducer, AnyAction } from "@reduxjs/toolkit"
-import { IWallet, Wallet } from "renderer/models/wallet.model"
+import { Account, Wallet } from "renderer/models/wallet.model"
 
 export enum WalletsAction {
 	NewWallet = "NewWallet",
@@ -27,12 +27,19 @@ export const ReducerWallets = createReducer<IWalletsState>(initialState, (builde
 		state.list.push(action.wallet)
 	})
 	builder.addCase(WalletsAction.NewAccount, (state, action: AnyAction) => {
-		state.list = state.list.map((wallet) => {
-			if (wallet.id == action.walletId) {
-				wallet.newAccount(`Account ${wallet.getLastIndex() + 2}`, action.password)
+		let account: Account
+		let wallet: Wallet
+		state.list = state.list.map((w) => {
+			if (w.id == action.walletId) {
+				account = w.newAccount(`Account ${w.getLastIndex() + 2}`, action.password)
+				wallet = w
 			}
 			return wallet
 		})
+		if (account && wallet) {
+			state.selectedAccount = account.id
+			state.selectedWallet = wallet.id
+		}
 	})
 	builder.addCase(WalletsAction.SelectWallet, (state, action: AnyAction) => {
 		const wallet = state.list.find((w) => w.id == action.walletId)
