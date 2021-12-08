@@ -1,8 +1,11 @@
 import React from "react"
-import { ButtonBase, Divider, Tooltip } from "@mui/material"
+import { ButtonBase, Divider, Theme, Tooltip, Typography } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { getCurrentWindow } from "@electron/remote"
+import { useSelector } from "react-redux"
+import { darkTheme, lightTheme } from "renderer/theme"
+
 const minimizeApp = () => {
 	getCurrentWindow().minimize()
 }
@@ -12,35 +15,47 @@ const closeApp = () => {
 }
 
 export function TitleBar() {
+	const theme = useSelector((s: any) => s.settings.theme)
+	const background =
+		theme == "dark" ? darkTheme.palette.background.default : lightTheme.palette.background.default
 	return (
 		<React.Fragment>
 			<div
 				style={{
 					width: "100%",
-					height: 40,
-					display: "flex",
-					flexDirection: "row-reverse",
+					position: "fixed",
+					left: 0,
+					top: 0,
+					zIndex: 99999999,
 				}}
 			>
-				<Tooltip arrow title="Close">
-					<ButtonBase style={{ width: 50, height: 35, color: "red" }} onClick={closeApp}>
-						<CloseIcon sx={{ fontSize: 16 }} />
-					</ButtonBase>
-				</Tooltip>
-				<Tooltip arrow title="Minimize">
-					<ButtonBase style={{ width: 50, height: 35 }} onClick={minimizeApp}>
-						<KeyboardArrowDownIcon sx={{ fontSize: 18 }} />
-					</ButtonBase>
-				</Tooltip>
-				<div
-					style={{
-						//@ts-ignore
-						"-webkit-app-region": "drag",
-						flex: 1,
-						height: 40,
-					}}
-				></div>
+				<div style={{ height: 40, display: "flex", flexDirection: "row-reverse", backgroundColor: background }}>
+					<Tooltip arrow title="Close">
+						<ButtonBase style={{ width: 50, height: 35, color: "red" }} onClick={closeApp}>
+							<CloseIcon sx={{ fontSize: 16 }} />
+						</ButtonBase>
+					</Tooltip>
+					<Tooltip arrow title="Minimize">
+						<ButtonBase style={{ width: 50, height: 35 }} onClick={minimizeApp}>
+							<KeyboardArrowDownIcon sx={{ fontSize: 18 }} />
+						</ButtonBase>
+					</Tooltip>
+					<div
+						style={{
+							//@ts-ignore
+							"-webkit-app-region": "drag",
+							flex: 1,
+							height: 40,
+							display: "flex",
+							alignItems: "center",
+							paddingLeft: 18,
+						}}
+					>
+						<Typography>MetaBox Wallet v1.0.0</Typography>
+					</div>
+				</div>
 			</div>
+			<div style={{ width: "100%", height: 40 }} />
 		</React.Fragment>
 	)
 }

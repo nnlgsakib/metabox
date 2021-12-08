@@ -13,11 +13,15 @@ import { shortenAddress } from "helpers/shorten-address.helper"
 import copy from "copy-to-clipboard"
 import { toast } from "react-toastify"
 import { NewAccountDialog } from "../dialogs/new-account.dialog"
+import { SelectAnotherAccountDialog } from "../dialogs/select-another-account.dialog"
+import { INetworkState } from "renderer/store/reducers/network.reducer"
+import { getAddressUrl } from "helpers/get-address-url.helper"
 
 export function AccountBarComponent() {
 	const wallets: IWalletsState = useSelector((s: any) => s.wallets)
 	const [wallet, setWallet] = React.useState<Wallet | null>(null)
 	const [account, setAccount] = React.useState<Account | null>(null)
+	const network: INetworkState = useSelector((s: any) => s.network)
 
 	React.useEffect(() => {
 		let _w = null
@@ -50,10 +54,20 @@ export function AccountBarComponent() {
 	}
 
 	const [newAccountDialog, setNewAccountDialog] = React.useState(false)
+	const [selectAnotherAccountDialog, setSelectAnotherAcccountDialog] = React.useState(false)
+
+	const accountUrl: string = React.useMemo(() => {
+		if (!account || !network.current?.explorer || network.current?.explorer?.length == 0) return null
+		return getAddressUrl(network.current.explorer, account.address)
+	}, [network.current?.id, account?.address])
 
 	return (
 		<React.Fragment>
 			<NewAccountDialog open={newAccountDialog} onClose={() => setNewAccountDialog(false)} />
+			<SelectAnotherAccountDialog
+				open={selectAnotherAccountDialog}
+				onClose={() => setSelectAnotherAcccountDialog(false)}
+			/>
 			<div style={{ display: "flex", height: 80, marginTop: 4 }}>
 				<div style={{ flex: 1 }}></div>
 				<div style={{ flex: 1 }}>
@@ -80,8 +94,8 @@ export function AccountBarComponent() {
 						</Button>
 					</Tooltip>
 				</div>
-				<div style={{ flex: 1, display: "flex", flexDirection: "row-reverse" }} className="p10">
-					<div>
+				<div style={{ flex: 1, display: "flex", flexDirection: "row-reverse" }}>
+					<div className="p10">
 						<Tooltip arrow title="Account">
 							<IconButton onClick={handleClick}>
 								<MoreVertIcon />
@@ -96,9 +110,6 @@ export function AccountBarComponent() {
 								"aria-labelledby": "basic-button",
 							}}
 						>
-							<MenuItem onClick={handleClose}>
-								<InfoIcon style={{ marginRight: 6 }} /> Account Info
-							</MenuItem>
 							<MenuItem
 								onClick={() => {
 									setNewAccountDialog(true)
@@ -110,10 +121,21 @@ export function AccountBarComponent() {
 							<MenuItem onClick={handleClose}>
 								<AdminPanelSettingsIcon style={{ marginRight: 6 }} /> Manage Accounts
 							</MenuItem>
-							<MenuItem onClick={handleClose}>
+							<MenuItem
+								onClick={() => {
+									setSelectAnotherAcccountDialog(true)
+									handleClose()
+								}}
+							>
 								<GroupIcon style={{ marginRight: 6 }} /> Select Another Account
 							</MenuItem>
-							<MenuItem onClick={handleClose}>
+							<MenuItem
+								disabled={!accountUrl}
+								onClick={() => {
+									handleClose()
+									window.open(accountUrl as string, "_blank")
+								}}
+							>
 								<LanguageIcon style={{ marginRight: 6 }} /> View Account in Explorer
 							</MenuItem>
 						</Menu>

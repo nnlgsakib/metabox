@@ -19,7 +19,7 @@ export function GreetingView() {
 		<div className="flex-col-center greetingLayout">
 			<div className="p10">
 				<Typography align="center" variant="h4">
-					Welcome to Unity Wallet
+					Welcome to MetaBox
 				</Typography>
 				<Button
 					size="large"

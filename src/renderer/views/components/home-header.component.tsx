@@ -147,15 +147,9 @@ export function HomeHeaderComponent() {
 									{n.name}
 								</MenuItem>
 							))}
-							<ListItem style={{ display: "flex", flexDirection: "row-reverse" }}>
-								<Button variant="contained" color="primary" size="small">
-									<AddIcon />
-									Add Network
-								</Button>
-							</ListItem>
 						</Menu>
 					</div>
-					<Tooltip title="This Wallet" arrow>
+					<Tooltip title="Wallet" arrow>
 						<IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
 							<Avatar sx={{ width: 38, height: 38 }}>
 								<AccountBalanceWalletIcon />
@@ -200,14 +194,17 @@ export function HomeHeaderComponent() {
 					<ListItem>
 						<ListItemText>Wallets</ListItemText>
 					</ListItem>
-					{wallets.list.map((w) => (
-						<MenuItem style={{ background: w.id == wallets.selectedWallet ? "#00000010" : undefined }}>
-							<Avatar style={{ width: 38, height: 38 }}>
-								<AccountBalanceWalletIcon />
-							</Avatar>{" "}
-							{w.name}
-						</MenuItem>
-					))}
+					{wallets.list.map((w) => {
+						const isSelected = w.id == wallets.selectedWallet
+						return (
+							<MenuItem style={{ backgroundColor: isSelected ? "#00000012" : undefined }}>
+								<Avatar style={{ width: 38, height: 38 }}>
+									<AccountBalanceWalletIcon />
+								</Avatar>{" "}
+								<Typography color={isSelected ? "secondary" : "textSecondary"}>{w.name}</Typography>
+							</MenuItem>
+						)
+					})}
 					<Divider />
 					<MenuItem>
 						<ListItemIcon>

@@ -23,7 +23,7 @@ export function NewAccountDialog({ open, onClose }: any) {
 	if (!currentWallet) return null
 
 	return (
-		<Dialog open={open} maxWidth="xs" fullWidth>
+		<Dialog open={open} maxWidth="xs" fullWidth onClose={onClose}>
 			<DialogTitle>
 				<Typography>New Account</Typography>
 			</DialogTitle>
