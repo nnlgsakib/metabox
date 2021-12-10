@@ -62,18 +62,18 @@ const hideWindow = (e?: Electron.Event) => {
 	e?.preventDefault()
 	mainWindow?.hide()
 }
+const RESOURCES_PATH = app.isPackaged
+	? path.join(process.resourcesPath, "assets")
+	: path.join(__dirname, "../../assets")
+
+const getAssetPath = (...paths: string[]): string => {
+	return path.join(RESOURCES_PATH, ...paths)
+}
+const AppIconPath = getAssetPath("icon.png")
 
 const createWindow = async () => {
 	if (isDevelopment) {
 		await installExtensions()
-	}
-
-	const RESOURCES_PATH = app.isPackaged
-		? path.join(process.resourcesPath, "assets")
-		: path.join(__dirname, "../../assets")
-
-	const getAssetPath = (...paths: string[]): string => {
-		return path.join(RESOURCES_PATH, ...paths)
 	}
 
 	mainWindow = new BrowserWindow({
@@ -84,7 +84,7 @@ const createWindow = async () => {
 		minWidth: 450,
 		maxHeight: isDevelopment ? undefined : 1200,
 		minHeight: 500,
-		icon: getAssetPath("icon.png"),
+		icon: AppIconPath,
 		frame: false,
 		title: "Metaverse Wallet",
 		darkTheme: true,
@@ -144,7 +144,7 @@ app
 			if (mainWindow === null) createWindow()
 		})
 		app.on("quit", hideWindow)
-		tray = new Tray(path.join(process.cwd(), "assets/icon.png"))
+		tray = new Tray(AppIconPath)
 		const contextMenu = Menu.buildFromTemplate([
 			{
 				label: "Show Wallet",
