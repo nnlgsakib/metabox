@@ -33,6 +33,7 @@ import { INetworkState, NetworkAction } from "renderer/store/reducers/network.re
 import { AuthAction } from "renderer/store/reducers/auth.reducer"
 import { IWalletsState } from "renderer/store/reducers/wallets.reducer"
 import { SettingsAction } from "renderer/store/reducers/settings.reducer"
+import { TokenIcon } from "./token-icon.component"
 
 export function HomeHeaderComponent() {
 	const dispatch = useDispatch()
@@ -139,11 +140,10 @@ export function HomeHeaderComponent() {
 							</ListItem>
 							{networks.map((n) => (
 								<MenuItem onClick={() => onSelectNetwork(n.id)}>
-									{n.id == network.current.id ? (
-										<CheckIcon style={{ marginRight: 6, fontSize: 22 }} />
-									) : n.locked ? (
-										<LockIcon style={{ marginRight: 6, fontSize: 14 }} />
-									) : null}
+									<TokenIcon
+										symbol={n.token}
+										style={{ opacity: n.id == network.current.id ? 1 : 0.2, width: 30, height: 30, marginRight: 10 }}
+									/>
 									{n.name}
 								</MenuItem>
 							))}
@@ -243,11 +243,8 @@ export function HomeHeaderComponent() {
 			</div>
 			<div
 				style={{
-					//@ts-ignore
-					"-webkit-app-region": "drag",
 					flex: 1,
 					height: 100,
-					zIndex: 0,
 				}}
 			/>
 		</div>

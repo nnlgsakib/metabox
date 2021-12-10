@@ -1,9 +1,8 @@
-import { Button, Divider, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material"
+import { Button, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material"
 import React from "react"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
 import LanguageIcon from "@mui/icons-material/Language"
 import PersonAddIcon from "@mui/icons-material/PersonAdd"
-import InfoIcon from "@mui/icons-material/Info"
 import GroupIcon from "@mui/icons-material/Group"
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings"
 import { IWalletsState } from "renderer/store/reducers/wallets.reducer"
@@ -141,9 +140,6 @@ export function AccountBarComponent() {
 						</Menu>
 					</div>
 				</div>
-			</div>
-			<div style={{ padding: 6, flex: 1 }}>
-				<Divider />
 			</div>
 		</React.Fragment>
 	)

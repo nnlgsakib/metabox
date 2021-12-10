@@ -46,9 +46,9 @@ export function ReceiveDialog({ open, onClose }: any) {
 				to: currentAccount?.address,
 			})
 			.then((data: any) => {
-				console.log(data)
 				setQrCodeData(data.dataURL)
 			})
+			.catch(() => {})
 	}, [currentAccount?.address])
 
 	const shortAddress = React.useMemo(() => shortenAddress(currentAccount?.address), [currentAccount?.address])

@@ -3,7 +3,7 @@ import { createStore, combineReducers, compose, applyMiddleware } from "redux"
 import createSagaMiddleware from "redux-saga"
 import { persistStore, persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
-import { ReducerAuth } from "./reducers/auth.reducer"
+import { AuthAction, ReducerAuth } from "./reducers/auth.reducer"
 import { ReducerSettings } from "./reducers/settings.reducer"
 import { ReducerTransactions } from "./reducers/transactions.reducer"
 import { ReducerWallets } from "./reducers/wallets.reducer"
@@ -11,6 +11,7 @@ import { RootSaga } from "./root.saga"
 import { walletsTransform } from "./transforms/wallets.transform"
 import { currentNetworkTransform, networksTransform } from "./transforms/network.transform"
 import { ReducerNetwork } from "./reducers/network.reducer"
+import { ipcMain } from "@electron/remote"
 
 const authReducer = persistReducer(
 	{
@@ -70,6 +71,9 @@ export default () => {
 		}),
 		composeEnhancers(applyMiddleware(sagaMiddleware)),
 	)
+	ipcMain.on("lock-wallet", () => {
+		store.dispatch({ type: AuthAction.SetPassword, password: null })
+	})
 	sagaMiddleware.run(RootSaga)
 	const persistor = persistStore(store)
 	return { store, persistor }

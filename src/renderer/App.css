@@ -3,7 +3,7 @@ body {
 	margin: 0;
 }
 ::-webkit-scrollbar {
-	width: 4px;
+	width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -12,6 +12,7 @@ body {
 
 ::-webkit-scrollbar-thumb {
 	background: #66666688;
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -23,6 +24,9 @@ body {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+}
+.no-text-transform {
+	text-transform: none;
 }
 
 .p10 {

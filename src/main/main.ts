@@ -11,10 +11,11 @@
 import "core-js/stable"
 import "regenerator-runtime/runtime"
 import path from "path"
-import { app, BrowserWindow, shell, ipcMain } from "electron"
+import { app, BrowserWindow, ipcMain, Menu, shell, Tray, Notification } from "electron"
 import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import { resolveHtmlPath } from "./util"
+// import { IpcServer } from "./api"
 require("@electron/remote/main").initialize()
 
 export default class AppUpdater {
@@ -57,6 +58,11 @@ const installExtensions = async () => {
 		.catch(console.log)
 }
 
+const hideWindow = (e?: Electron.Event) => {
+	e?.preventDefault()
+	mainWindow?.hide()
+}
+
 const createWindow = async () => {
 	if (isDevelopment) {
 		await installExtensions()
@@ -75,14 +81,15 @@ const createWindow = async () => {
 		width: 450,
 		height: 680,
 		maxWidth: isDevelopment ? undefined : 600,
-		minWidth: 400,
-		maxHeight: isDevelopment ? undefined : 900,
+		minWidth: 450,
+		maxHeight: isDevelopment ? undefined : 1200,
 		minHeight: 500,
 		icon: getAssetPath("icon.png"),
 		frame: false,
 		title: "Metaverse Wallet",
 		darkTheme: true,
 		fullscreenable: false,
+		maximizable: false,
 
 		webPreferences: {
 			// preload: path.join(__dirname, "preload.js"),
@@ -105,12 +112,8 @@ const createWindow = async () => {
 		}
 	})
 
-	mainWindow.on("closed", () => {
-		mainWindow = null
-	})
-
-	// const menuBuilder = new MenuBuilder(mainWindow)
-	// menuBuilder.buildMenu()
+	mainWindow.on("closed", hideWindow)
+	mainWindow.on("close", hideWindow)
 
 	// Open urls in the user's browser
 	mainWindow.webContents.on("new-window", (event, url) => {
@@ -118,7 +121,6 @@ const createWindow = async () => {
 		shell.openExternal(url)
 	})
 
-	// Remove this if your app does not use auto updates
 	// eslint-disable-next-line
 	new AppUpdater()
 }
@@ -127,14 +129,11 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
-app.on("window-all-closed", () => {
-	// Respect the OSX convention of having the application in memory even
-	// after all windows have been closed
-	if (process.platform !== "darwin") {
-		app.quit()
-	}
-})
-
+app.on("window-all-closed", hideWindow)
+let tray = null
+const showMainWindow = () => {
+	mainWindow?.show()
+}
 app
 	.whenReady()
 	.then(() => {
@@ -144,5 +143,42 @@ app
 			// dock icon is clicked and there are no other windows open.
 			if (mainWindow === null) createWindow()
 		})
+		app.on("quit", hideWindow)
+		tray = new Tray(path.join(process.cwd(), "assets/icon.png"))
+		const contextMenu = Menu.buildFromTemplate([
+			{
+				label: "Show Wallet",
+				type: "normal",
+				click: showMainWindow,
+			},
+			{
+				label: "Lock Wallet",
+				type: "normal",
+				click: () => {
+					ipcMain.emit("lock-wallet")
+					new Notification({ title: "MetaBox Wallet", body: "Wallet locked !" }).show()
+				},
+			},
+			{
+				type: "separator",
+			},
+			{
+				label: "Quit Wallet",
+				type: "normal",
+				toolTip: "Close wallet even in the background !",
+				click: () => {
+					mainWindow?.removeAllListeners()
+					app.removeAllListeners()
+					mainWindow?.close()
+					app.quit()
+				},
+			},
+		])
+		tray.setToolTip("MetaBox Wallet")
+		tray.on("click", showMainWindow)
+		tray.on("double-click", showMainWindow)
+		tray.setContextMenu(contextMenu)
 	})
 	.catch(console.log)
+
+// new IpcServer()

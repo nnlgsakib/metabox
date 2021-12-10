@@ -55,7 +55,7 @@
     },
     {
         "id": 97,
-        "token": "tBNB",
+        "token": "BNB",
         "locked": true,
         "isTestnet": true,
         "name": "Binance Smart Chain (BSC) Testnet",

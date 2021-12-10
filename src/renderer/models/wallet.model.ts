@@ -86,7 +86,6 @@ export class Wallet implements IWallet {
 		const hdWallet = utils.HDNode.fromMnemonic(mnemonic).derivePath(path)
 		const encryptedPrivateKey = Wallet.encrypt(hdWallet.privateKey, password)
 		const account = new Account(uuid(), index, name, hdWallet.address, encryptedPrivateKey)
-		console.log(hdWallet)
 		this.accounts.push(account)
 		return account
 	}

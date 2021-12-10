@@ -1,10 +1,10 @@
 import { takeLatest } from "redux-saga/effects"
-import { SampleSaga } from "./sagas/sample.saga"
+import { fetchBalanceSaga } from "./sagas/fetch-balance.saga"
 
 export enum SagaAction {
-	Sample = "Sample",
+	FetchBalance = "FetchBalance",
 }
 
 export function* RootSaga() {
-	yield takeLatest(SagaAction.Sample, SampleSaga)
+	yield takeLatest(SagaAction.FetchBalance, fetchBalanceSaga)
 }

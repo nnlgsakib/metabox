@@ -1,17 +1,24 @@
 import React from "react"
-import { ButtonBase, Divider, Theme, Tooltip, Typography } from "@mui/material"
+import { ButtonBase, Tooltip, Typography } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { getCurrentWindow } from "@electron/remote"
 import { useSelector } from "react-redux"
 import { darkTheme, lightTheme } from "renderer/theme"
+import { Notification } from "@electron/remote"
 
 const minimizeApp = () => {
 	getCurrentWindow().minimize()
 }
 
 const closeApp = () => {
-	getCurrentWindow().close()
+	getCurrentWindow().hide()
+	new Notification({
+		title: "MetaBox",
+		body: "MetaBox Wallet is running in the background!",
+		silent: true,
+		subtitle: "MetaBox",
+	}).show()
 }
 
 export function TitleBar() {
@@ -27,6 +34,7 @@ export function TitleBar() {
 					left: 0,
 					top: 0,
 					zIndex: 99999999,
+					boxShadow: "3px 3px 20px #00000022",
 				}}
 			>
 				<div style={{ height: 40, display: "flex", flexDirection: "row-reverse", backgroundColor: background }}>

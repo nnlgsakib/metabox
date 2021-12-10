@@ -4,7 +4,7 @@ import { ReceiveDialog } from "./dialogs/receive.dialog"
 import { TokenIcon } from "./components/token-icon.component"
 import { INetworkState } from "renderer/store/reducers/network.reducer"
 import { useSelector } from "react-redux"
-import { IconButton, Typography } from "@mui/material"
+import { Divider, IconButton, Tab, Tabs, Typography } from "@mui/material"
 import CachedIcon from "@mui/icons-material/Cached"
 import OutboundIcon from "@mui/icons-material/Outbound"
 import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
@@ -12,9 +12,14 @@ import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
 export function HomeView() {
 	const network: INetworkState = useSelector((s: any) => s.network)
 	const [receiveDialog, setReceiveDialog] = React.useState(false)
+	const [tab, setTab] = React.useState(0)
+
 	return (
 		<React.Fragment>
 			<AccountBarComponent />
+			<div style={{ padding: 6, flex: 1 }}>
+				<Divider />
+			</div>
 			<ReceiveDialog open={receiveDialog} onClose={() => setReceiveDialog(false)} />
 			<div className="flex-col-center p10">
 				<TokenIcon symbol={network.current.token} style={{ width: 70, height: 70 }} />
@@ -50,6 +55,16 @@ export function HomeView() {
 						<Typography>Swap</Typography>
 					</div>
 				</div>
+			</div>
+			<Tabs style={{ marginTop: 50 }} value={tab} variant="fullWidth" textColor="secondary">
+				<Tab
+					label={network.current.id != 56 && network.current.id != 97 ? "ERC-20 Tokens" : "BEP-20 Tokens"}
+					onClick={() => setTab(0)}
+				/>
+				<Tab label="Transactions" onClick={() => setTab(1)} />
+			</Tabs>
+			<div style={{ width: "100%" }}>
+				<Divider />
 			</div>
 		</React.Fragment>
 	)

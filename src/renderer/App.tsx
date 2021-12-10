@@ -6,6 +6,7 @@ import { AppLayout } from "./App.layout"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { TitleBar } from "./views/components/title-bar.component"
+import { ipcMain } from "@electron/remote"
 
 const { store, persistor } = configureStore()
 
