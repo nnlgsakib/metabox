@@ -27,12 +27,6 @@ export default class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null
 
-// ipcMain.on("ipc-example", async (event, arg) => {
-// 	const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`
-// 	console.log(msgTemplate(arg))
-// 	event.reply("ipc-example", msgTemplate("pong"))
-// })
-
 if (process.env.NODE_ENV === "production") {
 	const sourceMapSupport = require("source-map-support")
 	sourceMapSupport.install()
@@ -104,11 +98,8 @@ const createWindow = async () => {
 		if (!mainWindow) {
 			throw new Error('"mainWindow" is not defined')
 		}
-		if (process.env.START_MINIMIZED) {
-			mainWindow.minimize()
-		} else {
-			mainWindow.show()
-		}
+		mainWindow.show()
+		mainWindow.focus()
 	})
 
 	mainWindow.on("closed", hideWindow)
@@ -124,60 +115,78 @@ const createWindow = async () => {
 	new AppUpdater()
 }
 
-/**
- * Add event listeners...
- */
-
-app.on("window-all-closed", hideWindow)
 let tray = null
 const showMainWindow = () => {
 	mainWindow?.show()
 }
-app
-	.whenReady()
-	.then(() => {
-		createWindow()
-		app.on("activate", () => {
-			// On macOS it's common to re-create a window in the app when the
-			// dock icon is clicked and there are no other windows open.
-			if (mainWindow === null) createWindow()
-		})
-		app.on("quit", hideWindow)
-		tray = new Tray(AppIconPath)
-		const contextMenu = Menu.buildFromTemplate([
-			{
-				label: "Show Wallet",
-				type: "normal",
-				click: showMainWindow,
-			},
-			{
-				label: "Lock Wallet",
-				type: "normal",
-				click: () => {
-					ipcMain.emit("lock-wallet")
-					new Notification({ title: "MetaBox Wallet", body: "Wallet locked !" }).show()
-				},
-			},
-			{
-				type: "separator",
-			},
-			{
-				label: "Quit Wallet",
-				type: "normal",
-				toolTip: "Close wallet even in the background !",
-				click: () => {
-					mainWindow?.removeAllListeners()
-					app.removeAllListeners()
-					mainWindow?.close()
-					app.quit()
-				},
-			},
-		])
-		tray.setToolTip("MetaBox Wallet")
-		tray.on("click", showMainWindow)
-		tray.on("double-click", showMainWindow)
-		tray.setContextMenu(contextMenu)
+const additionalData = { myKey: "myValue" }
+const gotTheLock = app.requestSingleInstanceLock(additionalData)
+
+if (!gotTheLock) {
+	app.quit()
+} else {
+	app.on("quit", hideWindow)
+	app.on("window-all-closed", hideWindow)
+
+	app.on("second-instance", (event, commandLine, workingDirectory, additionalData) => {
+		// Print out data received from the second instance.
+		console.log(additionalData)
+
+		// Someone tried to run a second instance, we should focus our window.
+		if (mainWindow) {
+			if (mainWindow.isMinimized()) mainWindow.restore()
+			mainWindow.show()
+			mainWindow.focus()
+		}
 	})
-	.catch(console.log)
+
+	// Create myWindow, load the rest of the app, etc...
+	app
+		.whenReady()
+		.then(() => {
+			createWindow()
+			app.on("activate", () => {
+				// On macOS it's common to re-create a window in the app when the
+				// dock icon is clicked and there are no other windows open.
+				if (mainWindow === null) createWindow()
+			})
+
+			tray = new Tray(AppIconPath)
+			const contextMenu = Menu.buildFromTemplate([
+				{
+					label: "Show Wallet",
+					type: "normal",
+					click: showMainWindow,
+				},
+				{
+					label: "Lock Wallet",
+					type: "normal",
+					click: () => {
+						ipcMain.emit("lock-wallet")
+						new Notification({ title: "MetaBox Wallet", body: "Wallet locked !" }).show()
+					},
+				},
+				{
+					type: "separator",
+				},
+				{
+					label: "Quit Wallet",
+					type: "normal",
+					toolTip: "Close wallet even in the background !",
+					click: () => {
+						mainWindow?.removeAllListeners()
+						app.removeAllListeners()
+						mainWindow?.close()
+						app.quit()
+					},
+				},
+			])
+			tray.setToolTip("MetaBox Wallet")
+			tray.on("click", showMainWindow)
+			tray.on("double-click", showMainWindow)
+			tray.setContextMenu(contextMenu)
+		})
+		.catch(console.log)
+}
 
 // new IpcServer()
