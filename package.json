@@ -14,7 +14,7 @@
     "start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only ./src/main/main.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "test": "jest",
-    "test:rpc": "jest ./src/main/rpc/tests",
+    "test:rpc": "jest ./src/main/rpc/json-rpc-api.test.ts",
     "rpc-server": "cross-env RPC_MODE=test nodemon --watch \"./**/*.ts\" --exec \"ts-node\" ./src/main/rpc/json-rpc-api.ts",
     "prepare": "husky install"
   },

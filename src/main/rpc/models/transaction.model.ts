@@ -33,7 +33,8 @@ export class TransactionModel {
 	gasPrice?: string
 
 	@IsOptional()
-	@Matches(/0x[]/)
+	@MaxLength(10000)
+	@Matches(hexPattern)
 	data?: string
 
 	@IsOptional()
