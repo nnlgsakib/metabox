@@ -18,6 +18,8 @@ import { resolveHtmlPath } from "./util"
 import { rpc } from "./rpc/json-rpc-api"
 require("@electron/remote/main").initialize()
 
+rpc.run()
+
 export default class AppUpdater {
 	constructor() {
 		log.transports.file.level = "info"
@@ -189,5 +191,3 @@ if (!gotTheLock) {
 		})
 		.catch(console.log)
 }
-
-rpc

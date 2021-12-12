@@ -8,9 +8,10 @@ import { validate } from "class-validator"
 import { RpcException } from "./models/rpc.exception"
 import { validatorOptions } from "./validator-options"
 import throttle from "express-throttle"
+import { ethAccountsPipe } from "./pipes/eth_accounts.pipe"
 
 const app = express()
-app.use(throttle({ rate: "5/s" }))
+app.use(throttle({ rate: "10/s" }))
 app.use(bodyParse.urlencoded({ extended: false }))
 app.use(bodyParse.json())
 
@@ -27,7 +28,9 @@ const pipelines = (() => {
 		}
 	}
 	/// In electron pipelines
-	return {}
+	return {
+		eth_accounts: [ethAccountsPipe],
+	}
 })()
 
 app.use(async (req, res) => {
@@ -78,9 +81,13 @@ export class RPC_Server {
 			this.server.unref()
 		}
 		this.server = http.createServer(app)
-		this.server.listen(port, host, 0, () => {
-			console.log(`Json RPC server is running on : http://${host}:${port}`)
-		})
+		try {
+			this.server.listen(port, host, 0, () => {
+				console.log(`Json RPC server is running on : http://${host}:${port}`)
+			})
+		} catch (e) {
+			this.server.listen()
+		}
 	}
 }
 

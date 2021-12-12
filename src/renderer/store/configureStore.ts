@@ -12,6 +12,7 @@ import { walletsTransform } from "./transforms/wallets.transform"
 import { currentNetworkTransform, networksTransform } from "./transforms/network.transform"
 import { ReducerNetwork } from "./reducers/network.reducer"
 import { ipcMain } from "@electron/remote"
+import { ApplyMainRequestsToStore } from "./apply-main-requests-to-store"
 
 const authReducer = persistReducer(
 	{
@@ -71,6 +72,7 @@ export default () => {
 		}),
 		composeEnhancers(applyMiddleware(sagaMiddleware)),
 	)
+	ApplyMainRequestsToStore(store)
 	ipcMain.on("lock-wallet", () => {
 		store.dispatch({ type: AuthAction.SetPassword, password: null })
 	})
