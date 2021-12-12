@@ -9,7 +9,7 @@
     "declaration": true,
     "declarationMap": true,
     "jsx": "react-jsx",
-    "strict": true,
+    "strict": false,
     "pretty": true,
     "sourceMap": true,
     "baseUrl": "./src",
@@ -24,10 +24,7 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "outDir": "release/app/dist",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/renderer/@types"
-    ]
+    "experimentalDecorators": true
   },
   "exclude": [
     "test",

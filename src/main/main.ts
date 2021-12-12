@@ -15,6 +15,7 @@ import { app, BrowserWindow, ipcMain, Menu, shell, Tray, Notification } from "el
 import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import { resolveHtmlPath } from "./util"
+import { rpc } from "./rpc/json-rpc-api"
 require("@electron/remote/main").initialize()
 
 export default class AppUpdater {
@@ -189,4 +190,4 @@ if (!gotTheLock) {
 		.catch(console.log)
 }
 
-// new IpcServer()
+rpc
