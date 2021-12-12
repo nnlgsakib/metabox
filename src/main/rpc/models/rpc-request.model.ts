@@ -1,6 +1,8 @@
 import { ArrayMaxSize, IsArray, IsIn, IsInt, IsOptional, IsString } from "class-validator"
 
 export const supportedRpcMethods = [
+	"eth_chainId",
+	"net_version",
 	"eth_accounts",
 	"eth_call",
 	"eth_estimateGas",

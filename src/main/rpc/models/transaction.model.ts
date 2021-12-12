@@ -1,15 +1,12 @@
-import { plainToClass } from "class-transformer"
-import { IsOptional, Matches, MaxLength, validate } from "class-validator"
+import { IsOptional, Matches, MaxLength } from "class-validator"
 import { EthAddress } from "./eth-address.decorator"
-import { RpcException } from "./rpc.exception"
-const hexPattern = /^0x([1-9a-f]+[0-9a-f]*|0)$/
+export const hexPattern = /^0x([1-9a-f]+[0-9a-f]*|0)$/
 
 export class TransactionModel {
 	@IsOptional()
 	@EthAddress()
 	from?: string
 
-	@IsOptional()
 	@EthAddress()
 	to?: string
 
@@ -44,6 +41,7 @@ export class TransactionModel {
 
 	@Matches(hexPattern)
 	@MaxLength(10)
+	@IsOptional()
 	chainId?: string
 
 	@IsOptional()
@@ -59,12 +57,4 @@ export class TransactionModel {
 	@MaxLength(40)
 	@Matches(hexPattern)
 	maxFeePerGas?: string
-}
-
-export async function validateTransactionOrFail(transaction: any) {
-	transaction = plainToClass(TransactionModel, transaction)
-	const errors = await validate(transaction)
-	if (errors.length > 0)
-		throw new RpcException(RpcException.Code.InvalidParams, errors.map((e) => e.value).join(" ; "))
-	return true
 }

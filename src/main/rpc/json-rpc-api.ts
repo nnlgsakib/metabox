@@ -9,11 +9,19 @@ import { RpcException } from "./models/rpc.exception"
 import { validatorOptions } from "./validator-options"
 import throttle from "express-throttle"
 import { ethAccountsPipe } from "./pipes/eth_accounts.pipe"
+import { ethCallPipe } from "./pipes/eth_call.pipe"
+import { ethChainIdPipe } from "./pipes/eth_chainId.pipe"
 
+const isDev = process.env.NODE_ENV == "development"
 const app = express()
 app.use(throttle({ rate: "10/s" }))
 app.use(bodyParse.urlencoded({ extended: false }))
 app.use(bodyParse.json())
+if (isDev)
+	app.use((req, res, next) => {
+		console.log(`RPC : `, req.body)
+		next()
+	})
 
 if (process.env.RPC_MODE) console.log(`RPC mode : ${process.env.RPC_MODE}`)
 const IS_TEST_MODE = process.env.RPC_MODE == "test"
@@ -29,7 +37,10 @@ const pipelines = (() => {
 	}
 	/// In electron pipelines
 	return {
+		eth_chainId: [ethChainIdPipe],
+		net_version: [ethChainIdPipe],
 		eth_accounts: [ethAccountsPipe],
+		eth_call: [ethCallPipe],
 	}
 })()
 
