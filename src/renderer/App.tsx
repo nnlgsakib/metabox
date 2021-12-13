@@ -6,11 +6,17 @@ import { AppLayout } from "./App.layout"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { TitleBar } from "./views/components/title-bar.component"
-import { ipcMain } from "@electron/remote"
 
 const { store, persistor } = configureStore()
-
+const isTransactionWindow = window.process.argv.indexOf("transactions-window") > -1
 export default function App() {
+	if (isTransactionWindow) {
+		return (
+			<div>
+				<h3>This is a transaction view</h3>
+			</div>
+		)
+	}
 	return (
 		<Provider store={store}>
 			<PersistGate loading={null} persistor={persistor}>

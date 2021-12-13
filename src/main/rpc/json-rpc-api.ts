@@ -11,6 +11,8 @@ import throttle from "express-throttle"
 import { ethAccountsPipe } from "./pipes/eth_accounts.pipe"
 import { ethCallPipe } from "./pipes/eth_call.pipe"
 import { ethChainIdPipe } from "./pipes/eth_chainId.pipe"
+import { ethSendTransactionPipe } from "./pipes/eth_sendTransaction.pipe"
+import { ethEstimateGas } from "./pipes/eth_estimateGas.pipe"
 
 const isDev = process.env.NODE_ENV == "development"
 const app = express()
@@ -41,6 +43,8 @@ const pipelines = (() => {
 		net_version: [ethChainIdPipe],
 		eth_accounts: [ethAccountsPipe],
 		eth_call: [ethCallPipe],
+		eth_estimateGas: [ethEstimateGas],
+		eth_sendTransaction: [ethSendTransactionPipe],
 	}
 })()
 
