@@ -22,9 +22,5 @@ export function ReducerTransactions(
 	state: ITransaction[] = initialState,
 	action: AnyAction & Action<TransactionAction>,
 ): ITransaction[] {
-	switch (action.type) {
-		case TransactionAction.NewTransaction:
-			return [action.data, ...state]
-	}
 	return state
 }

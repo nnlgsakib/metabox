@@ -6,12 +6,18 @@ import { BigNumber as BN } from "bignumber.js"
 const USDT_ADDRESS = "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
 let usdtToken: ethers.Contract
 let provider: ethers.providers.JsonRpcProvider
+let signer: ethers.providers.JsonRpcSigner
 let accounts: string[]
+const CHAIN_ID = 137
 beforeAll(async () => {
-	provider = new ethers.providers.JsonRpcProvider("http://localhost:11235", { chainId: 137, name: "Polygon" })
+	provider = new ethers.providers.JsonRpcProvider("http://localhost:11235", {
+		chainId: CHAIN_ID,
+		name: "Polygon",
+	})
 	accounts = await provider.listAccounts()
+	signer = provider.getUncheckedSigner()
 	console.log(`accounts : ${accounts.join(" , ")}`)
-	usdtToken = new ethers.Contract(USDT_ADDRESS, ERC20Abi, provider.getUncheckedSigner())
+	usdtToken = new ethers.Contract(USDT_ADDRESS, ERC20Abi, signer)
 	expect(accounts.length > 0).toBeTruthy()
 })
 
@@ -30,8 +36,8 @@ describe("Json RPC", () => {
 		expect(estimatedGas).toBeGreaterThanOrEqual(0)
 	})
 
-	test("eth_transaction", async () => {
-		const tx = await usdtToken.transfer(accounts[1], BigNumber.from(0))
-		console.log(tx)
-	})
+	test.only("eth_transaction", async () => {
+		const result = await usdtToken.transfer(accounts[1], BigNumber.from(0))
+		console.log(result)
+	}, 120000)
 })

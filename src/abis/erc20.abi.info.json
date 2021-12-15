@@ -1,0 +1,51 @@
+[
+	{
+		"id": "095ea7b3",
+		"method": "approve(address,uint256)",
+		"name": "approve",
+		"inputs": [
+			{
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "23b872dd",
+		"method": "transferFrom(address,address,uint256)",
+		"name": "transferFrom",
+		"inputs": [
+			{
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "a9059cbb",
+		"method": "transfer(address,uint256)",
+		"name": "transfer",
+		"inputs": [
+			{
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		]
+	}
+]
