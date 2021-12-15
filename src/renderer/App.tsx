@@ -8,15 +8,8 @@ import "react-toastify/dist/ReactToastify.css"
 import { TitleBar } from "./views/components/title-bar.component"
 
 const { store, persistor } = configureStore()
-const isTransactionWindow = window.process.argv.indexOf("transactions-window") > -1
+
 export default function App() {
-	if (isTransactionWindow) {
-		return (
-			<div>
-				<h3>This is a transaction view</h3>
-			</div>
-		)
-	}
 	return (
 		<Provider store={store}>
 			<PersistGate loading={null} persistor={persistor}>

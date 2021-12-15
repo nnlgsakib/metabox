@@ -26,16 +26,16 @@ export function* txRequestSaga(action: any) {
 		if (methodId.length == 8) {
 			info = availableAbiInfo.find((method) => method.id == methodId)
 			if (info) {
-				const dataChunks = tx.data.slice(10).match(/.{1,64}/g)
+				const dataBlocks = tx.data.slice(10).match(/.{1,64}/g)
 				contractParams = info.inputs.map((input, index) => {
 					let value = null
 					switch (input.type) {
 						case "address":
-							const address = "0x" + dataChunks[index].slice(64 - 40)
+							const address = "0x" + dataBlocks[index].slice(64 - 40)
 							ethers.utils.isAddress(address) ? (value = ethers.utils.getAddress(address)) : null
 							break
 						case "uint256":
-							value = BigNumber.from(dataChunks[index]).toString()
+							value = BigNumber.from(dataBlocks[index]).toString()
 							break
 					}
 					return {
@@ -57,7 +57,7 @@ export function* txRequestSaga(action: any) {
 	}
 	yield put({ type: TxRequestAction.NewTransaction, data })
 	currentWin.show()
-	if (currentWin.isMinimized) currentWin.unmaximize()
+	if (currentWin.isMinimized) currentWin.restore()
 	if (!currentWin.isFocused) {
 		currentWin.focus()
 		currentWin.center()

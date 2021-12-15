@@ -1,5 +1,5 @@
 import React from "react"
-import { CssBaseline, Grid, Theme, ThemeProvider, Typography } from "@mui/material"
+import { CssBaseline, Grid, Theme, ThemeProvider } from "@mui/material"
 import { MemoryRouter as Router, Switch, Route } from "react-router-dom"
 import { GreetingView } from "./views/greeting.view"
 import { SetPasswordView } from "./views/set-password.view"
@@ -11,11 +11,14 @@ import { HomeView } from "./views/home.view"
 import { HomeHeaderComponent } from "./views/components/home-header.component"
 import { IWalletsState, WalletsAction } from "./store/reducers/wallets.reducer"
 import { ISettingsState } from "./store/reducers/settings.reducer"
+import { ITxRequestState } from "./store/reducers/tx-request.reducer"
+import { TransactionView } from "./views/transaction.view"
 
 export function AppLayout() {
 	const auth: IAuthState = useSelector((s: any) => s.auth)
 	const wallets: IWalletsState = useSelector((s: any) => s.wallets)
 	const settings: ISettingsState = useSelector((s: any) => s.settings)
+	const txRequest: ITxRequestState = useSelector((s: any) => s.txRequest)
 	const [theme, setTheme] = React.useState<Theme>(lightTheme)
 
 	React.useEffect(() => {
@@ -36,18 +39,22 @@ export function AppLayout() {
 				<SetPasswordView />
 			) : auth.password ? (
 				wallets.list.length > 0 ? (
-					<React.Fragment>
-						<HomeHeaderComponent />
-						<Grid container justifyContent="center">
-							<Grid item xs={12} sm={9} md={6}>
-								<Router>
-									<Switch>
-										<Route path="/" component={HomeView} />
-									</Switch>
-								</Router>
+					txRequest.transactions.length != 500 ? (
+						<TransactionView />
+					) : (
+						<React.Fragment>
+							<HomeHeaderComponent />
+							<Grid container justifyContent="center">
+								<Grid item xs={12} sm={9} md={6}>
+									<Router>
+										<Switch>
+											<Route path="/" component={HomeView} />
+										</Switch>
+									</Router>
+								</Grid>
 							</Grid>
-						</Grid>
-					</React.Fragment>
+						</React.Fragment>
+					)
 				) : (
 					<GreetingView />
 				)

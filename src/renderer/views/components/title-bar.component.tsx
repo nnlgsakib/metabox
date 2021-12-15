@@ -6,6 +6,7 @@ import { getCurrentWindow } from "@electron/remote"
 import { useSelector } from "react-redux"
 import { darkTheme, lightTheme } from "renderer/theme"
 import { Notification } from "@electron/remote"
+import packageJson from "../../../../package.json"
 
 const minimizeApp = () => {
 	getCurrentWindow().minimize()
@@ -59,7 +60,7 @@ export function TitleBar() {
 							paddingLeft: 18,
 						}}
 					>
-						<Typography>MetaBox Wallet v1.0.0</Typography>
+						<Typography>MetaBox Wallet v{packageJson.version}</Typography>
 					</div>
 				</div>
 			</div>
