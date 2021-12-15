@@ -60,7 +60,7 @@ export function TitleBar() {
 							paddingLeft: 18,
 						}}
 					>
-						<Typography>MetaBox Wallet v{packageJson.version}</Typography>
+						<Typography variant="body2">MetaBox Wallet v{packageJson.version}</Typography>
 					</div>
 				</div>
 			</div>

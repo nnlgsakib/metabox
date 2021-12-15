@@ -80,3 +80,7 @@ div,
 img {
 	user-select: none;
 }
+
+.userSelectable {
+	user-select: text;
+}
