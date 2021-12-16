@@ -39,8 +39,8 @@ export function AppLayout() {
 				<SetPasswordView />
 			) : auth.password ? (
 				wallets.list.length > 0 ? (
-					txRequest.transactions.length != 500 ? (
-						<TransactionView />
+					txRequest.transactions.length > 0 ? (
+						<TransactionView txRequest={txRequest} />
 					) : (
 						<React.Fragment>
 							<HomeHeaderComponent />
