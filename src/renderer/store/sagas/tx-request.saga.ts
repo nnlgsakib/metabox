@@ -45,7 +45,7 @@ export function* txRequestSaga(action: any) {
 								ethers.utils.isAddress(address) ? (value = ethers.utils.getAddress(address)) : null
 								break
 							case "uint256":
-								value = BigNumber.from(dataBlocks[index]).toString()
+								value = BigNumber.from(`0x${dataBlocks[index]}`).toString()
 								break
 						}
 						return {

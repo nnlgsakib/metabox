@@ -1,6 +1,6 @@
 import React from "react"
 import { INetworkState } from "renderer/store/reducers/network.reducer"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import {
 	Alert,
 	AppBar,
@@ -31,56 +31,83 @@ import { BigNumber as BN } from "bignumber.js"
 import { TransactionModel } from "main/rpc/models/transaction.model"
 import { shortenAddress } from "helpers/shorten-address.helper"
 import copy from "copy-to-clipboard"
-import urlParse from "url-parse"
+import { SagaAction } from "renderer/store/root.saga"
 
 const weiFactor = BigNumber.from(10).pow(18).toString()
+const gweiFactor = BigNumber.from(10).pow(9).toString()
 
 export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
+	const dispatch = useDispatch()
 	const network: INetworkState = useSelector((s: any) => s.network)
 	const theme = useTheme()
 	const [tab, setTab] = React.useState(0)
 	const [estimatingGasError, setEstimatingGasError] = React.useState<string | null>(null)
 	const [currentTxIndex, setCurrentTxIndex] = React.useState(0)
-	const [tx, setTx] = React.useState<ITxRequest | null>(null)
-	React.useEffect(() => {
-		setTx(txRequest.transactions[currentTxIndex])
-	}, [currentTxIndex])
+	const tx = React.useMemo<ITxRequest>(() => txRequest.transactions[currentTxIndex], [currentTxIndex])
 	const txNetwork: Network = network.networks.find((net) => net.id == tx?.chainId)
+
+	// Eth transaction received by json-rpc
 	const transaction: TransactionModel = tx?.tx
+
 	const details = React.useMemo(() => {
 		if (!transaction) return { value: 0, fee: 0, to: null, contractInteraction: false }
 		const contractInteraction = transaction.data && transaction.data != "0x0" && tx.info
 		const contractParamReceiver = contractInteraction
-			? tx.contractParams.find((param) => param.name == "spender" || param.name == "to")?.value
+			? tx.contractParams.find(
+					(param) => param.name == "spender" || param.name == "to" || param.name == "account",
+			  )?.value
 			: null
+		let contractParamAmount: any =
+			contractInteraction && tx.token ? tx.contractParams.find((param) => param.name == "amount")?.value : null
+
+		if (contractParamAmount) {
+			contractParamAmount = parseFloat(
+				new BN(contractParamAmount).dividedBy(BigNumber.from(10).pow(tx.token.decimals).toHexString()).toFixed(8),
+			)
+		}
+		const value =
+			transaction.value && transaction.value != "0x0"
+				? parseFloat(new BN(transaction.value).dividedBy(weiFactor).toFixed(8))
+				: 0
+
+		const fee =
+			transaction.gas && transaction.gas != "0x0"
+				? parseFloat(new BN(transaction.gas).dividedBy(gweiFactor).toFixed(8))
+				: transaction.gasLimit &&
+				  transaction.gasPrice &&
+				  transaction.gasLimit != "0x0" &&
+				  transaction.gasPrice != "0x0"
+				? parseFloat(
+						new BN(transaction.gasLimit).multipliedBy(transaction.gasPrice).dividedBy(gweiFactor).toFixed(8),
+				  )
+				: 0
+
 		return {
-			value:
-				transaction.value && transaction.value != "0x0"
-					? parseFloat(new BN(transaction.value).dividedBy(weiFactor).toFixed(8))
-					: 0,
-			fee:
-				transaction.gas && transaction.gas != "0x0"
-					? parseFloat(new BN(transaction.gas).dividedBy(weiFactor).toFixed(8))
-					: transaction.gasLimit &&
-					  transaction.gasPrice &&
-					  transaction.gasLimit != "0x0" &&
-					  transaction.gasPrice != "0x0"
-					? parseFloat(
-							new BN(transaction.gasLimit).multipliedBy(transaction.gasPrice).dividedBy(weiFactor).toFixed(8),
-					  )
-					: 0,
+			value,
+			fee,
+			total: parseFloat((fee + value).toFixed(8)),
 			contractInteraction,
 			to: contractParamReceiver
 				? ethers.utils.getAddress(contractParamReceiver)
 				: ethers.utils.getAddress(transaction.to),
 			contractURL:
 				contractInteraction && txNetwork && txNetwork.explorer && txNetwork.explorer.length > 0
-					? new urlParse(txNetwork.explorer).origin + `/address/${transaction.to}`
+					? `${txNetwork.explorer}/address/${transaction.to}`
 					: null,
+			amount: contractParamAmount,
 		}
-	}, [tx?.requestId])
+	}, [tx?.requestId, tx?.token?.symbol])
 
-	React.useEffect(async () => {}, [tx?.requestId])
+	React.useEffect(() => {
+		if (
+			transaction &&
+			transaction.to &&
+			tx?.info &&
+			!tx?.token &&
+			!txRequest.loadingTokens.find((t) => t == transaction.to.toLowerCase())
+		)
+			dispatch({ type: SagaAction.FetchTokenInfo, address: transaction.to, networkId: tx?.chainId })
+	}, [tx?.requestId, tx?.token?.symbol])
 
 	const estimateGas = React.useCallback(() => {}, [tx?.requestId])
 
@@ -152,6 +179,7 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 						From :{" "}
 						<Tooltip title={`Click to copy : ${shortenAddress(tx.account.address)}`} arrow>
 							<Button style={{ textTransform: "none" }} onClick={() => copy(tx.account.address)}>
+								<TokenIcon address={tx.account.address} style={{ width: 35, height: 35, marginRight: 10 }} />
 								{tx.account.name}
 							</Button>
 						</Tooltip>
@@ -180,20 +208,46 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 					</Typography>
 				</div>
 			</div>
-			<div
-				className="flex-row-center"
-				style={{ backgroundColor: "#00000008", padding: 20, marginTop: 10, border: "1px solid #00000055" }}
-			>
-				<TokenIcon symbol="bnb" style={{ width: 40, height: 40, marginRight: 10 }} />
-				<div>
-					<Typography variant="h5">10 MBW</Typography>
-					<Tooltip title="Method" arrow>
-						<Button size="small" variant="outlined" style={{ marginTop: 6 }} color="warning">
-							Transfer
-						</Button>
-					</Tooltip>
+			{!details.contractInteraction && details.value > 0 ? (
+				<div
+					className="flex-row-center"
+					style={{ backgroundColor: "#00000008", padding: 20, marginTop: 10, border: "1px solid #00000055" }}
+				>
+					<TokenIcon symbol={txNetwork.token} style={{ width: 60, height: 60, marginRight: 10 }} />
+					<div>
+						<Typography variant="h5">
+							{details.value} {txNetwork.token.toUpperCase()}
+						</Typography>
+						<Tooltip title="Method" arrow>
+							<Button size="small" variant="outlined" style={{ marginTop: 6 }} color="success">
+								Transfer
+							</Button>
+						</Tooltip>
+					</div>
 				</div>
-			</div>
+			) : details.amount ? (
+				<div
+					className="flex-row-center"
+					style={{ backgroundColor: "#00000008", padding: 20, marginTop: 10, border: "1px solid #00000055" }}
+				>
+					<TokenIcon address={transaction.to} style={{ width: 60, height: 60, marginRight: 10 }} />
+					<div>
+						<Typography variant="h5">
+							{details.amount} {tx.token?.symbol}
+						</Typography>
+						<Tooltip title="Method" arrow>
+							<Button
+								size="small"
+								variant="outlined"
+								style={{ marginTop: 6, textTransform: "none" }}
+								color="warning"
+							>
+								{tx.info.name}
+							</Button>
+						</Tooltip>
+					</div>
+				</div>
+			) : null}
 			{estimatingGasError ? (
 				<div className="p10">
 					<Alert
@@ -215,7 +269,7 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 			<div className="p10">
 				<Tabs value={tab}>
 					<Tab label="Details" onClick={() => setTab(0)} />
-					<Tab label="Data" onClick={() => setTab(1)} />
+					{transaction.data && transaction.data != "0x0" ? <Tab label="Data" onClick={() => setTab(1)} /> : null}
 				</Tabs>
 				<Divider />
 			</div>
@@ -233,20 +287,25 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 					<List dense>
 						<ListItem>
 							<ListItemText>
-								Transaction Value : {details.value} {txNetwork.token}
+								<span className="userSelectable">
+									Transaction Value : {details.value} {txNetwork.token}
+								</span>
 							</ListItemText>
 						</ListItem>
 						<ListItem>
-							<ListItemText>
-								Estimated gas fee : {details.fee} {txNetwork.token}
+							<ListItemText className="userSelectable">
+								<span className="userSelectable">
+									Estimated gas fee : {details.fee} {txNetwork.token}
+								</span>
 							</ListItemText>
 						</ListItem>
 						<ListItem>
 							<ListItemText
 								primary="Total :"
 								secondary={
-									<Typography variant="h6" color="green">
-										{details.fee + details.value} {txNetwork.token}
+									<Typography className="userSelectable" variant="h6" color="green">
+										{details.amount && tx.token ? `${details.amount} ${tx.token.symbol} + ` : null}
+										{details.total} {txNetwork.token}
 									</Typography>
 								}
 							></ListItemText>
@@ -286,8 +345,8 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 											primary="Method Params :"
 											secondary={
 												<List dense>
-													{tx.contractParams.map((param) => (
-														<ListItem>
+													{tx.contractParams.map((param, i) => (
+														<ListItem key={i}>
 															<Typography variant="caption" className="userSelectable">
 																{param.name} ({param.type}) : {param.value}
 															</Typography>
@@ -332,6 +391,3 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 		</div>
 	)
 }
-/**
- * This gas fee has been suggested by https://remix.ethereum.org. Overriding this may cause a problem with your transaction. Please reach out to https://remix.ethereum.org if you have questions.
- */

@@ -9,7 +9,7 @@
 				"type": "address"
 			},
 			{
-				"name": "value",
+				"name": "amount",
 				"type": "uint256"
 			}
 		]
@@ -28,7 +28,7 @@
 				"type": "address"
 			},
 			{
-				"name": "value",
+				"name": "amount",
 				"type": "uint256"
 			}
 		]
@@ -43,7 +43,99 @@
 				"type": "address"
 			},
 			{
-				"name": "value",
+				"name": "amount",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "42966c68",
+		"method": "burn(uint256)",
+		"name": "burn",
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "79cc6790",
+		"method": "burnFrom(address,uint256)",
+		"name": "burnFrom",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "a457c2d7",
+		"method": "decreaseAllowance(address,uint256)",
+		"name": "decreaseAllowance",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "subtractedValue",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "39509351",
+		"method": "increaseAllowance(address,uint256)",
+		"name": "increaseAllowance",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "addedValue",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "40c10f19",
+		"method": "mint(address,uint256)",
+		"name": "mint",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		]
+	},
+	{
+		"id": "a0712d68",
+		"method": "mint(uint256)",
+		"name": "mint",
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
 				"type": "uint256"
 			}
 		]

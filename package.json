@@ -17,7 +17,7 @@
     "test": "jest",
     "test:rpc": "jest ./src/main/rpc/json-rpc-api.test.ts",
     "rpc-server": "cross-env RPC_MODE=test nodemon --watch \"./**/*.ts\" --exec \"ts-node\" ./src/main/rpc/json-rpc-api.ts",
-    "build:abiMethods": "npx ts-node ./src/abis/create-method-id.ts",
+    "build:abiInfo": "npx ts-node ./src/abis/generate-info-files.ts",
     "prepare": "husky install"
   },
   "nodemonConfig": {
@@ -260,6 +260,7 @@
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.1",
     "electron-updater": "^4.3.9",
+    "ethereum-blockies": "^0.1.1",
     "ethereum-qr-code": "^0.3.0",
     "ethers": "^5.5.2",
     "express": "^4.17.1",

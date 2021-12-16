@@ -17,7 +17,7 @@ export function fetchRenderer(data: IFetchRendererData, timeoutSecs: number = 2)
 		ipcMain.emit("__main-request", data)
 		const _timeout = setTimeout(() => {
 			reject(new Error("Request Timeout"))
-			ipcMain.emit("__main-request-cancel", data.id)
+			ipcMain.emit("__main-request-cancel", { requestId: data.id })
 			ipcMain.removeAllListeners(data.id)
 		}, Math.floor(timeoutSecs * 1000))
 		ipcMain.once(data.id, (e, res: IRendererResponse) => {

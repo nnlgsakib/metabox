@@ -1,11 +1,10 @@
 import { IsOptional, Matches, MaxLength } from "class-validator"
 import { EthAddress } from "./eth-address.decorator"
-export const hexPattern = /^0x([1-9a-f]+[0-9a-f]*|0)$/
+export const hexPattern = /^0x([0-9a-f]*|0)$/
 
 export class TransactionModel {
-	@IsOptional()
 	@EthAddress()
-	from?: string
+	from: string
 
 	@EthAddress()
 	to?: string
@@ -30,7 +29,6 @@ export class TransactionModel {
 	gasPrice?: string
 
 	@IsOptional()
-	@MaxLength(10000)
 	@Matches(hexPattern)
 	data?: string
 

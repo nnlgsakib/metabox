@@ -5,10 +5,12 @@ import { TransactionModel } from "main/rpc/models/transaction.model"
 import { IAccount } from "renderer/models/wallet.model"
 
 export enum TxRequestAction {
-	NewTransaction = "NewTransaction",
-	UpdateTransaction = "UpdateTransaction",
-	RejectTransaction = "RejectTransaction",
-	RejectAll = "RejectAll",
+	NewTransaction = "TxRequest/NewTransaction",
+	UpdateTransaction = "TxRequest/UpdateTransaction",
+	RejectTransaction = "TxRequest/RejectTransaction",
+	RejectAll = "TxRequest/RejectAll",
+	UpdateToken = "TxRequest/UpdateToken",
+	SetLoadingToken = "TxRequest/SetLoadingToken",
 }
 
 export interface ITxRequestContractParam {
@@ -18,8 +20,8 @@ export interface ITxRequestContractParam {
 }
 
 export interface ITxRequest {
-	/// application name provided by backend
 	account: IAccount
+	/// application provided by backend
 	application: {
 		pid: number
 		name: string
@@ -35,12 +37,23 @@ export interface ITxRequest {
 	contractParams: ITxRequestContractParam[]
 }
 
+export interface ITxRequestToken {
+	address: string
+	networkId: number
+	symbol: string
+	decimals: number
+}
+
 export interface ITxRequestState {
+	loadingTokens: string[]
 	transactions: ITxRequest[]
+	tokens: ITxRequestToken[]
 }
 
 const initialState: ITxRequestState = {
+	loadingTokens: [],
 	transactions: [],
+	tokens: [],
 }
 
 export const ReducerTxRequest = createReducer<ITxRequestState>(initialState, (builder) => {
@@ -48,7 +61,8 @@ export const ReducerTxRequest = createReducer<ITxRequestState>(initialState, (bu
 		state.transactions.push(action.data)
 	})
 	builder.addCase(TxRequestAction.RejectTransaction, (state, action: AnyAction) => {
-		ipcRenderer.send(action.requestId, { error: "MetaBox user rejected the transaction" })
+		if (!action.hasOwnProperty("feedback") || action.feedback)
+			ipcRenderer.send(action.requestId, { error: "MetaBox user rejected the transaction" })
 		state.transactions = state.transactions.filter((tx) => tx.requestId != action.requestId)
 	})
 	builder.addCase(TxRequestAction.RejectAll, (state) => {
@@ -57,4 +71,32 @@ export const ReducerTxRequest = createReducer<ITxRequestState>(initialState, (bu
 		}
 		state.transactions = []
 	})
+	builder.addCase(TxRequestAction.UpdateToken, (state, action: AnyAction & { data: ITxRequestToken }) => {
+		const token = action.data
+		const findCurrent = state.tokens.find((t) => t.networkId == token.networkId && t.address == token.address)
+		if (!findCurrent) state.tokens.push(token)
+		// else
+		// 	state.tokens = state.tokens.map((t) => {
+		// 		if (t.networkId == token.networkId && t.address == token.address) return { ...t, ...token }
+		// 		else return t
+		// 	})
+		state.transactions.map((transaction) => {
+			if (
+				transaction.info &&
+				transaction.chainId == token.networkId &&
+				transaction.tx.to?.toLowerCase() == token.address
+			)
+				transaction.token = token
+			return transaction
+		})
+	})
+	builder.addCase(
+		TxRequestAction.SetLoadingToken,
+		(state, action: AnyAction & { address: string; trigger: boolean }) => {
+			if (action.trigger == false && state.loadingTokens.indexOf(action.address) > -1)
+				state.loadingTokens = state.loadingTokens.filter((t) => t != action.address)
+			if (action.trigger == true && state.loadingTokens.indexOf(action.address) == -1)
+				state.loadingTokens.push(action.address)
+		},
+	)
 })

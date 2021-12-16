@@ -6,6 +6,7 @@ import { IWalletsState } from "./reducers/wallets.reducer"
 import { IpcMainEvent } from "electron"
 import { INetworkState } from "./reducers/network.reducer"
 import { SagaAction } from "./root.saga"
+import { TxRequestAction } from "./reducers/tx-request.reducer"
 
 const WALLET_ERROR = "Wallet caused an unknown error"
 
@@ -68,5 +69,9 @@ export function ApplyMainRequestsToStore(store: Store) {
 		} catch (e) {
 			return reject(e.message)
 		}
+	})
+	ipcMain.on("__main-request-cancel", (event) => {
+		//@ts-ignore
+		store.dispatch({ type: TxRequestAction.RejectTransaction, requestId: event.requestId, feedback: false })
 	})
 }

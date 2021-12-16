@@ -59,6 +59,15 @@ const walletsReducer = persistReducer(
 	ReducerWallets as Reducer<any, any>,
 )
 
+const txRequestReducer = persistReducer(
+	{
+		key: "txRequest",
+		storage,
+		whitelist: ["tokens"],
+	},
+	ReducerTxRequest as Reducer<any, any>,
+)
+
 const sagaMiddleware = createSagaMiddleware()
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
@@ -70,7 +79,7 @@ export default () => {
 			settings: settingsReducer,
 			transactions: transactionsReducer,
 			wallets: walletsReducer,
-			txRequest: ReducerTxRequest,
+			txRequest: txRequestReducer,
 		}),
 		composeEnhancers(applyMiddleware(sagaMiddleware)),
 	)
