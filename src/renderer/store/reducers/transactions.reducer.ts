@@ -1,26 +1,51 @@
-import { AnyAction, Action } from "redux"
+import { createReducer, AnyAction } from "@reduxjs/toolkit"
 
-export enum TransactionAction {
-	NewTransaction = "NewTransaction",
-	UpdateTransaction = "UpdateTransaction",
-	DeleteTransaction = "DeleteTransaction",
+export enum TransactionsAction {
+	NewTransaction = "transactions/NewTransaction",
+	UpdateTransaction = "transactions/UpdateTransaction",
+}
+
+export enum TransactionStatus {
+	Pending,
+	Reverted,
+	Success,
 }
 
 export interface ITransaction {
-	id: string
-	from: string
-	to: string
-	status: "pending" | "revert" | "success"
-	data: any
-	msg: string
+	application?: string
+	chainId: number
+	requestId: string
+	account: string
+	hash: string
+	status: TransactionStatus
 	timestamp: number
+	method?: string
+	token?: any
+	value: number
+	amount?: number
 }
 
-const initialState: ITransaction[] = []
-
-export function ReducerTransactions(
-	state: ITransaction[] = initialState,
-	action: AnyAction & Action<TransactionAction>,
-): ITransaction[] {
-	return state
+export interface ITransactionsState {
+	[chainId: number]: ITransaction[]
 }
+
+const initialState: ITransactionsState = {}
+
+export const ReducerTransactions = createReducer<ITransactionsState>(initialState, (builder) => {
+	builder.addCase(TransactionsAction.NewTransaction, (state, action: AnyAction) => {
+		const transaction: ITransaction = action.data
+		if (!state.hasOwnProperty(transaction.chainId)) state[transaction.chainId] = [transaction]
+		else state[transaction.chainId].unshift(transaction)
+	})
+	builder.addCase(TransactionsAction.UpdateTransaction, (state, action: AnyAction) => {
+		const transaction: ITransaction = action.data
+		if (state.hasOwnProperty(transaction.chainId)) {
+			state[transaction.chainId] = state[transaction.chainId].map((tx) => {
+				if (tx.requestId == action.data?.requestId) {
+					return { ...tx, ...action.data }
+				}
+				return tx
+			})
+		}
+	})
+})

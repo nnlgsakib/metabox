@@ -11,6 +11,8 @@ export enum TxRequestAction {
 	RejectAll = "TxRequest/RejectAll",
 	UpdateToken = "TxRequest/UpdateToken",
 	SetLoadingToken = "TxRequest/SetLoadingToken",
+	SetPendingRequest = "TxRequest/SetPendingRequest",
+	SetError = "TxRequest/SetError",
 }
 
 export interface ITxRequestContractParam {
@@ -44,12 +46,16 @@ export interface ITxRequestState {
 	loadingTokens: string[]
 	transactions: ITxRequest[]
 	tokens: ITxRequestToken[]
+	pendingRequests: string[]
+	errors: { [requestId: string]: string | null }
 }
 
 const initialState: ITxRequestState = {
 	loadingTokens: [],
 	transactions: [],
 	tokens: [],
+	pendingRequests: [],
+	errors: {},
 }
 
 export const ReducerTxRequest = createReducer<ITxRequestState>(initialState, (builder) => {
@@ -79,6 +85,21 @@ export const ReducerTxRequest = createReducer<ITxRequestState>(initialState, (bu
 				state.loadingTokens = state.loadingTokens.filter((t) => t != action.address)
 			if (action.trigger == true && state.loadingTokens.indexOf(action.address) == -1)
 				state.loadingTokens.push(action.address)
+		},
+	)
+	builder.addCase(
+		TxRequestAction.SetPendingRequest,
+		(state, action: AnyAction & { requestId: string; trigger: boolean }) => {
+			if (action.trigger == false && state.pendingRequests.indexOf(action.requestId) > -1)
+				state.pendingRequests = state.pendingRequests.filter((t) => t != action.requestId)
+			if (action.trigger == true && state.pendingRequests.indexOf(action.requestId) == -1)
+				state.pendingRequests.push(action.requestId)
+		},
+	)
+	builder.addCase(
+		TxRequestAction.SetError,
+		(state, action: AnyAction & { requestId: string; error: string | null }) => {
+			state.errors[action.requestId] = action.error
 		},
 	)
 })

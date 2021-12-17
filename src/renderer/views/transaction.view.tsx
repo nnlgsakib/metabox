@@ -36,6 +36,7 @@ import { shortenAddress } from "helpers/shorten-address.helper"
 import copy from "copy-to-clipboard"
 import { SagaAction } from "renderer/store/root.saga"
 import { RejectAllTransactionsDialog } from "./dialogs/reject-all-transactions.dialog"
+import { Wallet } from "renderer/models/wallet.model"
 
 const weiFactor = BigNumber.from(10).pow(18).toString()
 const gweiFactor = BigNumber.from(10).pow(9).toString()
@@ -61,7 +62,7 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 	const transaction: TransactionModel = tx?.tx
 
 	const details = React.useMemo(() => {
-		if (!transaction) return { value: 0, fee: 0, to: null, contractInteraction: false }
+		if (!transaction) return { value: 0, fee: 0, to: null, contractInteraction: false, loadingTokenInfo: false }
 		const contractInteraction = transaction.data && transaction.data != "0x0" && tx.info
 		const contractParamReceiver = contractInteraction
 			? tx.contractParams.find(
@@ -140,41 +141,41 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 		<div>
 			{txRequest.transactions.length > 1 ? (
 				<AppBar variant="outlined" position="static" color="transparent">
-					<RejectAllTransactionsDialog open={rejectAllDialog} onClose={() => setRejectAllDialog(false)} />
+					<RejectAllTransactionsDialog
+						open={rejectAllDialog && !pending}
+						onClose={() => setRejectAllDialog(false)}
+					/>
 					<Toolbar variant="dense">
-						<Tooltip title="Previous" arrow>
-							<IconButton
-								size="small"
-								disabled={currentTxIndex == 0}
-								onClick={() => {
-									setCurrentTxIndex(currentTxIndex - 1)
-									setTab(0)
-								}}
-							>
-								<ArrowBackIosNewIcon fontSize="small" />
-							</IconButton>
-						</Tooltip>
+						<IconButton
+							size="small"
+							disabled={currentTxIndex == 0 || pending}
+							onClick={() => {
+								setCurrentTxIndex(currentTxIndex - 1)
+								setTab(0)
+							}}
+						>
+							<ArrowBackIosNewIcon fontSize="small" />
+						</IconButton>
 						<Typography style={{ margin: "0 10px 0 10px" }}>
 							{currentTxIndex + 1} of {txRequest.transactions.length}
 						</Typography>
-						<Tooltip title="Next" arrow>
-							<IconButton
-								size="small"
-								disabled={currentTxIndex >= txRequest.transactions.length - 1}
-								onClick={() => {
-									setCurrentTxIndex(currentTxIndex + 1)
-									setTab(0)
-								}}
-							>
-								<ArrowForwardIosIcon fontSize="small" />
-							</IconButton>
-						</Tooltip>
+						<IconButton
+							size="small"
+							disabled={currentTxIndex >= txRequest.transactions.length - 1 || pending}
+							onClick={() => {
+								setCurrentTxIndex(currentTxIndex + 1)
+								setTab(0)
+							}}
+						>
+							<ArrowForwardIosIcon fontSize="small" />
+						</IconButton>
 						<div style={{ flex: 1, justifyContent: "flex-end", display: "flex" }}>
 							<Button
 								size="small"
 								style={{ textTransform: "none" }}
 								color="secondary"
 								onClick={() => setRejectAllDialog(true)}
+								disabled={pending}
 							>
 								<DisabledByDefaultIcon />
 								Reject All Transactions
@@ -405,12 +406,18 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 				}}
 			>
 				<div style={{ flex: 1, padding: 6 }}>
-					<Button variant="outlined" color="primary" fullWidth onClick={rejectTx}>
+					<Button variant="outlined" color="primary" fullWidth onClick={rejectTx} disabled={pending}>
 						Reject
 					</Button>
 				</div>
 				<div style={{ flex: 1, padding: 6 }}>
-					<Button variant="contained" color="primary" fullWidth disabled={details.loadingTokenInfo}>
+					<Button
+						variant="contained"
+						color="primary"
+						fullWidth
+						disabled={Boolean(details.loadingTokenInfo) || pending}
+						onClick={() => dispatch({ type: SagaAction.ApproveTxRequest, requestId: tx.requestId, details })}
+					>
 						Confirm
 					</Button>
 				</div>
