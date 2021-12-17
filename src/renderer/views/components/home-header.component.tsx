@@ -8,14 +8,11 @@ import Divider from "@mui/material/Divider"
 import IconButton from "@mui/material/IconButton"
 import Typography from "@mui/material/Typography"
 import Tooltip from "@mui/material/Tooltip"
-import PersonAdd from "@mui/icons-material/PersonAdd"
 import Settings from "@mui/icons-material/Settings"
 import LockIcon from "@mui/icons-material/Lock"
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import NetworkCheckIcon from "@mui/icons-material/NetworkCheck"
-import AddIcon from "@mui/icons-material/Add"
-import CheckIcon from "@mui/icons-material/Check"
 import HelpIcon from "@mui/icons-material/Help"
 
 import {
@@ -139,7 +136,7 @@ export function HomeHeaderComponent() {
 								</ListItemText>
 							</ListItem>
 							{networks.map((n) => (
-								<MenuItem onClick={() => onSelectNetwork(n.id)}>
+								<MenuItem key={n.id} onClick={() => onSelectNetwork(n.id)}>
 									<TokenIcon
 										symbol={n.token}
 										style={{ opacity: n.id == network.current.id ? 1 : 0.2, width: 30, height: 30, marginRight: 10 }}
@@ -197,7 +194,7 @@ export function HomeHeaderComponent() {
 					{wallets.list.map((w) => {
 						const isSelected = w.id == wallets.selectedWallet
 						return (
-							<MenuItem style={{ backgroundColor: isSelected ? "#00000012" : undefined }}>
+							<MenuItem key={w.id} style={{ backgroundColor: isSelected ? "#00000012" : undefined }}>
 								<Avatar style={{ width: 38, height: 38 }}>
 									<AccountBalanceWalletIcon />
 								</Avatar>{" "}

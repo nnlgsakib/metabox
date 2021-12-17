@@ -11,7 +11,7 @@
 import "core-js/stable"
 import "regenerator-runtime/runtime"
 import path from "path"
-import { app, BrowserWindow, ipcMain, Menu, shell, Tray, Notification } from "electron"
+import { app, BrowserWindow, ipcMain, Menu, shell, Tray, Notification, session } from "electron"
 import { autoUpdater } from "electron-updater"
 import log from "electron-log"
 import { resolveHtmlPath } from "./util"
@@ -85,7 +85,7 @@ const createWindow = async () => {
 		title: "Metaverse Wallet",
 		darkTheme: true,
 		fullscreenable: false,
-		maximizable: false,
+		maximizable: isDevelopment,
 
 		webPreferences: {
 			// preload: path.join(__dirname, "preload.js"),
@@ -188,6 +188,13 @@ if (!gotTheLock) {
 			tray.on("click", showMainWindow)
 			tray.on("double-click", showMainWindow)
 			tray.setContextMenu(contextMenu)
+
+			// load redux toolkit
+			if (isDevelopment) {
+				session.defaultSession.loadExtension(
+					`C:/Users/IO/AppData/Local/Google/Chrome/User Data/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/2.17.2_0/`,
+				)
+			}
 		})
 		.catch(console.log)
 }

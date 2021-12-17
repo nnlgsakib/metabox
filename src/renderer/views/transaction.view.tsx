@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux"
 import {
 	Alert,
 	AppBar,
+	Backdrop,
 	Button,
+	Chip,
+	CircularProgress,
 	Divider,
 	IconButton,
 	List,
@@ -24,7 +27,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward"
 import { TokenIcon } from "./components/token-icon.component"
 import ErrorIcon from "@mui/icons-material/Error"
-import { ITxRequest, ITxRequestState } from "renderer/store/reducers/tx-request.reducer"
+import { ITxRequest, ITxRequestState, TxRequestAction } from "renderer/store/reducers/tx-request.reducer"
 import { Network } from "renderer/models/network.model"
 import { BigNumber, ethers } from "ethers"
 import { BigNumber as BN } from "bignumber.js"
@@ -32,6 +35,7 @@ import { TransactionModel } from "main/rpc/models/transaction.model"
 import { shortenAddress } from "helpers/shorten-address.helper"
 import copy from "copy-to-clipboard"
 import { SagaAction } from "renderer/store/root.saga"
+import { RejectAllTransactionsDialog } from "./dialogs/reject-all-transactions.dialog"
 
 const weiFactor = BigNumber.from(10).pow(18).toString()
 const gweiFactor = BigNumber.from(10).pow(9).toString()
@@ -43,8 +47,15 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 	const [tab, setTab] = React.useState(0)
 	const [estimatingGasError, setEstimatingGasError] = React.useState<string | null>(null)
 	const [currentTxIndex, setCurrentTxIndex] = React.useState(0)
-	const tx = React.useMemo<ITxRequest>(() => txRequest.transactions[currentTxIndex], [currentTxIndex])
+	const tx = React.useMemo<ITxRequest>(() => {
+		if (currentTxIndex > txRequest.transactions.length - 1) {
+			setCurrentTxIndex(txRequest.transactions.length - 1)
+			return null
+		}
+		return txRequest.transactions[currentTxIndex]
+	}, [currentTxIndex, txRequest.transactions.length])
 	const txNetwork: Network = network.networks.find((net) => net.id == tx?.chainId)
+	const [pending, setPending] = React.useState(false)
 
 	// Eth transaction received by json-rpc
 	const transaction: TransactionModel = tx?.tx
@@ -57,14 +68,22 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 					(param) => param.name == "spender" || param.name == "to" || param.name == "account",
 			  )?.value
 			: null
+		const tokenAddress = transaction.to?.toLowerCase()
+		const token = contractInteraction
+			? txRequest.tokens.find((t) => t.address == tokenAddress && t.networkId == txNetwork.id)
+			: null
+		const loadingTokenInfo =
+			!token && tokenAddress && tx.info && txRequest.loadingTokens.find((t) => t == tokenAddress)
+
 		let contractParamAmount: any =
-			contractInteraction && tx.token ? tx.contractParams.find((param) => param.name == "amount")?.value : null
+			contractInteraction && token ? tx.contractParams.find((param) => param.name == "amount")?.value : null
 
 		if (contractParamAmount) {
 			contractParamAmount = parseFloat(
-				new BN(contractParamAmount).dividedBy(BigNumber.from(10).pow(tx.token.decimals).toHexString()).toFixed(8),
+				new BN(contractParamAmount).dividedBy(BigNumber.from(10).pow(token.decimals).toHexString()).toFixed(8),
 			)
 		}
+
 		const value =
 			transaction.value && transaction.value != "0x0"
 				? parseFloat(new BN(transaction.value).dividedBy(weiFactor).toFixed(8))
@@ -95,27 +114,33 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 					? `${txNetwork.explorer}/address/${transaction.to}`
 					: null,
 			amount: contractParamAmount,
+			loadingTokenInfo,
+			token,
 		}
-	}, [tx?.requestId, tx?.token?.symbol])
+	}, [tx?.requestId, txRequest.tokens, txRequest.loadingTokens])
 
 	React.useEffect(() => {
-		if (
-			transaction &&
-			transaction.to &&
-			tx?.info &&
-			!tx?.token &&
-			!txRequest.loadingTokens.find((t) => t == transaction.to.toLowerCase())
-		)
+		if (transaction && transaction.to && tx?.info && !details.token)
 			dispatch({ type: SagaAction.FetchTokenInfo, address: transaction.to, networkId: tx?.chainId })
-	}, [tx?.requestId, tx?.token?.symbol])
+	}, [tx?.requestId, details.token])
+
+	const rejectTx = React.useCallback(() => {
+		setPending(true)
+		setTimeout(() => {
+			setPending(false)
+			dispatch({ type: TxRequestAction.RejectTransaction, requestId: tx?.requestId })
+		}, 600)
+	}, [setPending, tx?.requestId])
 
 	const estimateGas = React.useCallback(() => {}, [tx?.requestId])
+	const [rejectAllDialog, setRejectAllDialog] = React.useState(false)
 
 	if (!tx || !txNetwork) return null
 	return (
 		<div>
 			{txRequest.transactions.length > 1 ? (
 				<AppBar variant="outlined" position="static" color="transparent">
+					<RejectAllTransactionsDialog open={rejectAllDialog} onClose={() => setRejectAllDialog(false)} />
 					<Toolbar variant="dense">
 						<Tooltip title="Previous" arrow>
 							<IconButton
@@ -145,7 +170,12 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 							</IconButton>
 						</Tooltip>
 						<div style={{ flex: 1, justifyContent: "flex-end", display: "flex" }}>
-							<Button size="small" style={{ textTransform: "none" }} color="secondary">
+							<Button
+								size="small"
+								style={{ textTransform: "none" }}
+								color="secondary"
+								onClick={() => setRejectAllDialog(true)}
+							>
 								<DisabledByDefaultIcon />
 								Reject All Transactions
 							</Button>
@@ -208,6 +238,12 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 					</Typography>
 				</div>
 			</div>
+			{details.loadingTokenInfo ? (
+				<div className="flex-col-center" style={{ padding: 20 }}>
+					<CircularProgress color="secondary" />
+					<Typography style={{ marginTop: 10 }}>Loading ...</Typography>
+				</div>
+			) : null}
 			{!details.contractInteraction && details.value > 0 ? (
 				<div
 					className="flex-row-center"
@@ -219,13 +255,11 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 							{details.value} {txNetwork.token.toUpperCase()}
 						</Typography>
 						<Tooltip title="Method" arrow>
-							<Button size="small" variant="outlined" style={{ marginTop: 6 }} color="success">
-								Transfer
-							</Button>
+							<Chip color="secondary" variant="outlined" label="TRANSFER" />
 						</Tooltip>
 					</div>
 				</div>
-			) : details.amount ? (
+			) : tx.info ? (
 				<div
 					className="flex-row-center"
 					style={{ backgroundColor: "#00000008", padding: 20, marginTop: 10, border: "1px solid #00000055" }}
@@ -233,17 +267,10 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 					<TokenIcon address={transaction.to} style={{ width: 60, height: 60, marginRight: 10 }} />
 					<div>
 						<Typography variant="h5">
-							{details.amount} {tx.token?.symbol}
+							{details.amount} {details.token?.symbol}
 						</Typography>
 						<Tooltip title="Method" arrow>
-							<Button
-								size="small"
-								variant="outlined"
-								style={{ marginTop: 6, textTransform: "none" }}
-								color="warning"
-							>
-								{tx.info.name}
-							</Button>
+							<Chip color="secondary" variant="outlined" label={tx.info.name} />
 						</Tooltip>
 					</div>
 				</div>
@@ -304,7 +331,7 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 								primary="Total :"
 								secondary={
 									<Typography className="userSelectable" variant="h6" color="green">
-										{details.amount && tx.token ? `${details.amount} ${tx.token.symbol} + ` : null}
+										{details.amount && details.token ? `${details.amount} ${details.token.symbol} + ` : null}
 										{details.total} {txNetwork.token}
 									</Typography>
 								}
@@ -378,16 +405,19 @@ export function TransactionView({ txRequest }: { txRequest: ITxRequestState }) {
 				}}
 			>
 				<div style={{ flex: 1, padding: 6 }}>
-					<Button variant="outlined" color="primary" fullWidth>
+					<Button variant="outlined" color="primary" fullWidth onClick={rejectTx}>
 						Reject
 					</Button>
 				</div>
 				<div style={{ flex: 1, padding: 6 }}>
-					<Button variant="contained" color="primary" fullWidth>
+					<Button variant="contained" color="primary" fullWidth disabled={details.loadingTokenInfo}>
 						Confirm
 					</Button>
 				</div>
 			</div>
+			<Backdrop style={{ zIndex: 1000002 }} open={pending}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 		</div>
 	)
 }

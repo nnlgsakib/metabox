@@ -29,10 +29,6 @@ export interface ITxRequest {
 	chainId: number
 	requestId: string
 	tx: TransactionModel
-	token?: {
-		symbol: string
-		decimals: number
-	}
 	info: IAbiMethodInfo | null
 	contractParams: ITxRequestContractParam[]
 }
@@ -75,20 +71,6 @@ export const ReducerTxRequest = createReducer<ITxRequestState>(initialState, (bu
 		const token = action.data
 		const findCurrent = state.tokens.find((t) => t.networkId == token.networkId && t.address == token.address)
 		if (!findCurrent) state.tokens.push(token)
-		// else
-		// 	state.tokens = state.tokens.map((t) => {
-		// 		if (t.networkId == token.networkId && t.address == token.address) return { ...t, ...token }
-		// 		else return t
-		// 	})
-		state.transactions.map((transaction) => {
-			if (
-				transaction.info &&
-				transaction.chainId == token.networkId &&
-				transaction.tx.to?.toLowerCase() == token.address
-			)
-				transaction.token = token
-			return transaction
-		})
 	})
 	builder.addCase(
 		TxRequestAction.SetLoadingToken,

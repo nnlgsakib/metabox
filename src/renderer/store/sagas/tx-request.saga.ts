@@ -4,7 +4,7 @@ import { validate } from "class-validator"
 import { TransactionModel } from "main/rpc/models/transaction.model"
 import { INetworkState } from "../reducers/network.reducer"
 import erc20AbiInfo from "abis/erc20.abi.info.json"
-import { ITxRequest, TxRequestAction } from "../reducers/tx-request.reducer"
+import { ITxRequest, ITxRequestToken, TxRequestAction } from "../reducers/tx-request.reducer"
 import _ from "lodash"
 import { AbiInfo, IAbiMethodInfo } from "helpers/generate-abi-info.helper"
 import { BigNumber, ethers } from "ethers"
@@ -57,6 +57,10 @@ export function* txRequestSaga(action: any) {
 				}
 			}
 		}
+		const contractAddress = tx.to?.toLowerCase()
+		const token: ITxRequestToken = yield select((s) =>
+			s.txRequest.tokens.find((t) => t.address == contractAddress && t.networkId == network.current.id),
+		)
 		const data: ITxRequest = {
 			account,
 			application: null,
@@ -65,6 +69,7 @@ export function* txRequestSaga(action: any) {
 			tx,
 			info,
 			contractParams,
+			token,
 		}
 		yield put({ type: TxRequestAction.NewTransaction, data })
 		currentWin.show()

@@ -22,12 +22,12 @@ beforeAll(async () => {
 })
 
 describe("Json RPC", () => {
-	test("eth_call - get USDT balance of first account in Polygon network", async () => {
-		const decimals = parseInt((await token.decimals()) as string)
+	test("eth_call - get token balance of first account in Polygon network", async () => {
+		const decimals = await token.decimals()
 		console.log(`Token Decimals : ${decimals}`)
 		const _b = ((await token.balanceOf(accounts[0])) as BigNumber).toString()
 		const balance = new BN(_b).dividedBy(Math.pow(10, decimals)).toNumber()
-		console.log(`Balance : ${balance} USDT`)
+		console.log(`Balance : ${balance} token`)
 		expect(balance).toBeGreaterThanOrEqual(0)
 	})
 
@@ -44,9 +44,8 @@ describe("Json RPC", () => {
 		const tokenAmount = BigNumber.from(
 			"0x" + new BN(2.345678).multipliedBy(BigNumber.from(10).pow(6).toHexString()).toString(16),
 		)
-		const tx1Promise = token.approve(accounts[1], tokenAmount).then((res) => (result.tx1 = res))
+		const tx1Promise = token.transfer(accounts[1], tokenAmount).then((res) => (result.tx1 = res))
 		const value = "0x" + new BN(0.0145).multipliedBy(BigNumber.from(10).pow(18).toHexString()).toString(16)
-		console.log(`transfering : ${value} wei`)
 		const tx2Promise = signer
 			.sendTransaction({
 				value,

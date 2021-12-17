@@ -1,23 +1,6 @@
 import React from "react"
-import {
-	Avatar,
-	Button,
-	Chip,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	List,
-	ListItem,
-	ListItemAvatar,
-	ListItemText,
-	MenuItem,
-	TextField,
-	Tooltip,
-	IconButton,
-	Typography,
-} from "@mui/material"
-import { IWalletsState, WalletsAction } from "renderer/store/reducers/wallets.reducer"
+import { Button, Dialog, DialogContent, DialogTitle, Tooltip, IconButton, Typography } from "@mui/material"
+import { IWalletsState } from "renderer/store/reducers/wallets.reducer"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import { shortenAddress } from "helpers/shorten-address.helper"

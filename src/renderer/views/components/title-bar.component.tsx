@@ -1,5 +1,5 @@
 import React from "react"
-import { ButtonBase, Tooltip, Typography } from "@mui/material"
+import { Button, Tooltip, Typography } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { getCurrentWindow } from "@electron/remote"
@@ -46,20 +46,19 @@ export function TitleBar() {
 				}}
 			>
 				<div style={{ height: 40, display: "flex", flexDirection: "row-reverse", backgroundColor: background }}>
-					<Tooltip arrow title="Close">
-						<ButtonBase style={{ width: 50, height: 35, color: "red" }} onClick={onClickClose}>
-							<CloseIcon sx={{ fontSize: 16 }} />
-						</ButtonBase>
-					</Tooltip>
-					<Tooltip arrow title="Minimize">
-						<ButtonBase style={{ width: 50, height: 35 }} onClick={minimizeApp}>
-							<KeyboardArrowDownIcon sx={{ fontSize: 18 }} />
-						</ButtonBase>
-					</Tooltip>
+					<Button
+						color="error"
+						style={{ width: 50, height: 40, color: "red", borderRadius: 0 }}
+						onClick={onClickClose}
+					>
+						<CloseIcon sx={{ fontSize: 16 }} />
+					</Button>
+					<Button color="inherit" style={{ width: 50, height: 40, borderRadius: 0 }} onClick={minimizeApp}>
+						<KeyboardArrowDownIcon sx={{ fontSize: 18 }} />
+					</Button>
 					<div
 						style={{
-							//@ts-ignore
-							"-webkit-app-region": "drag",
+							WebkitAppRegion: "drag",
 							flex: 1,
 							height: 40,
 							display: "flex",

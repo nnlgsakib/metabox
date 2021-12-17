@@ -51,6 +51,7 @@ export function SelectAnotherAccountDialog({ open, onClose }: any) {
 						const isSelected = account.id == wallets.selectedAccount
 						return (
 							<MenuItem
+								key={account.id}
 								disabled={isSelected}
 								onClick={!isSelected ? () => selectAccount(account.id) : undefined}
 								style={{ marginTop: 15 }}
