@@ -18,6 +18,7 @@ import { IWalletsState, WalletsAction } from "renderer/store/reducers/wallets.re
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
 import { shortenAddress } from "helpers/shorten-address.helper"
+import { TokenIcon } from "../components/token-icon.component"
 
 export function SelectAnotherAccountDialog({ open, onClose }: any) {
 	const dispatch = useDispatch()
@@ -57,7 +58,7 @@ export function SelectAnotherAccountDialog({ open, onClose }: any) {
 								style={{ marginTop: 15 }}
 							>
 								<ListItemAvatar>
-									<Avatar></Avatar>
+									<TokenIcon style={{ width: 50, height: 50 }} address={account.address} />
 								</ListItemAvatar>
 								<ListItemText
 									primary={

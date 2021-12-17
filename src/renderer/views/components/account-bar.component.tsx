@@ -15,6 +15,7 @@ import { NewAccountDialog } from "../dialogs/new-account.dialog"
 import { SelectAnotherAccountDialog } from "../dialogs/select-another-account.dialog"
 import { INetworkState } from "renderer/store/reducers/network.reducer"
 import { getAddressUrl } from "helpers/get-address-url.helper"
+import { TokenIcon } from "./token-icon.component"
 
 export function AccountBarComponent() {
 	const wallets: IWalletsState = useSelector((s: any) => s.wallets)
@@ -97,7 +98,7 @@ export function AccountBarComponent() {
 					<div className="p10">
 						<Tooltip arrow title="Account">
 							<IconButton onClick={handleClick}>
-								<MoreVertIcon />
+								<TokenIcon style={{ width: 45, height: 45 }} address={account?.address} />
 							</IconButton>
 						</Tooltip>
 						<Menu

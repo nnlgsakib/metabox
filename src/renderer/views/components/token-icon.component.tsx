@@ -4,6 +4,7 @@ import bnb from "../../img/coins/bnb.svg"
 import matic from "../../img/coins/matic.svg"
 import ftm from "../../img/coins/ftm.svg"
 import usdt from "../../img/coins/usdt.svg"
+import oeth from "../../img/coins/oeth.svg"
 
 const icons: { [s: string]: string } = {
 	eth,
@@ -11,6 +12,7 @@ const icons: { [s: string]: string } = {
 	matic,
 	ftm,
 	usdt,
+	opeth: oeth,
 }
 
 export function TokenIcon({
@@ -29,7 +31,7 @@ export function TokenIcon({
 		//@ts-ignore
 		const canvas: HTMLCanvasElement = window.blockies.create({
 			seed: address,
-			size: 8,
+			size: 6,
 			color: `#${address.slice(2, 5)}`.toLowerCase(),
 			bgColor: `#${address.slice(30, 36)}`.toLowerCase(),
 			spotcolor: `#${address.slice(22, 28)}`.toLowerCase(),
@@ -39,7 +41,7 @@ export function TokenIcon({
 	}
 	return (
 		<Avatar draggable={false} src={icon} {...otherProps}>
-			{!icon ? symbol.toUpperCase() : null}
+			{!icon && symbol ? symbol.toUpperCase() : null}
 		</Avatar>
 	)
 }

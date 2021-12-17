@@ -97,5 +97,14 @@
         "name": "Fantom Testnet",
         "explorer": "https://testnet.ftmscan.com",
         "url": "https://rpc.testnet.fantom.network"
+    },
+    {
+        "id": 10,
+        "token": "OpETH",
+        "locked": true,
+        "isTestnet": false,
+        "name": "Optimistic Ethereum",
+        "explorer": "https://optimistic.etherscan.io",
+        "url": "https://mainnet.optimism.io"
     }
 ]
