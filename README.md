@@ -1,4 +1,4 @@
-# Meta Wallet
+# Metabox Wallet
 An Electron.js desktop wallet for EVM compatible networks like Ethereum, Fantom, Matic and etc. 
 ### This software is still under development, do not use it as a real wallet, because it's not stable yet and it may cause some security flaws !!!!
 
